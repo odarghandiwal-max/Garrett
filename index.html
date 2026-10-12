@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Garretts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Pinyon+Script&display=swap">
+<style>
+:root{--bg:#fbf1e3;--surface:#fff8ee;--fg:#7a1525;--muted:#8a5558;--line:#e0c3b6;--rule:#8c1d2d;--accent:#8c1d2d;--accent-fg:#fbf1e3;--accent-soft:#f4e0d4;--font-serif:"Cormorant Garamond","Iowan Old Style",Georgia,serif;--font-script:"Pinyon Script","Snell Roundhand","Apple Chancery",cursive}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1013;--surface:#26171b;--fg:#f1dfd0;--muted:#c7a5a0;--line:#4b2d33;--rule:#e39aa0;--accent:#e8a3a8;--accent-fg:#1c1013;--accent-soft:#331f24;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1c1013;--surface:#26171b;--fg:#f1dfd0;--muted:#c7a5a0;--line:#4b2d33;--rule:#e39aa0;--accent:#e8a3a8;--accent-fg:#1c1013;--accent-soft:#331f24;color-scheme:dark}
+*{box-sizing:border-box}[hidden]{display:none!important}img{max-width:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font-serif);font-size:1.2rem;font-weight:500;line-height:1.5;font-variant-numeric:lining-nums;padding-inline:20px}
+.wrap{max-width:760px;margin-inline:auto;padding-block:28px 56px}
+header.mast{display:flex;flex-direction:column;align-items:center;gap:8px;padding-bottom:18px;border-bottom:1px solid var(--rule);text-align:center}
+.brand{font-style:italic;font-weight:500;font-size:1.9rem;line-height:1.1}
+nav{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 28px}
+nav a{color:var(--muted);text-decoration:none;font-weight:700;font-size:.82rem;letter-spacing:.22em;text-transform:uppercase}
+nav a:hover,nav a:focus-visible,nav a[aria-current]{color:var(--accent);text-decoration:underline;text-underline-offset:5px}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.intro{padding-block:44px 40px;text-align:center}
+.intro h1{font-family:var(--font-script);font-weight:400;font-size:clamp(3.4rem,14vw,6.2rem);line-height:1.05;color:var(--accent);margin:0 0 14px;text-wrap:balance}
+.intro p{margin:0 auto;max-width:42ch;color:var(--muted);font-size:1.3rem;font-style:italic}
+h2.label{display:flex;align-items:center;gap:16px;margin:0 0 20px;font-size:.82rem;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--accent)}
+h2.label::before,h2.label::after{content:"";flex:1;height:1px;background:var(--line)}
+.events{display:flex;flex-direction:column;margin:0;padding:0;list-style:none}
+.event{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:28px;padding:28px 4px;border-block:1px solid var(--line)}
+.event+.event{border-top:0}
+.date{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:76px;padding-right:28px;border-right:1px solid var(--rule);text-align:center}
+.date .w,.date .m{font-size:.82rem;font-weight:700;letter-spacing:.3em;padding-left:.3em;text-transform:uppercase}
+.date .d{font-size:3.6rem;font-weight:500;line-height:1;color:var(--accent);font-variant-numeric:lining-nums}
+.event h3,.lg h3{font-family:var(--font-script);font-weight:400;color:var(--accent);font-size:clamp(2.7rem,9vw,3.6rem);line-height:1.05;margin:0 0 8px}
+.tag{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;margin:0 0 12px;font-size:.78rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase}
+.bar{display:block;flex-shrink:0;width:1px;height:14px;background:var(--rule)}
+.eyebrow{margin:0 0 4px;font-size:.82rem;font-weight:700;letter-spacing:.3em;text-transform:uppercase}
+.short{display:block;width:64px;height:1px;background:var(--rule);margin:6px 0 14px}
+.meta{display:flex;flex-wrap:wrap;gap:2px 18px;margin:0 0 10px;font-size:.9rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.meta .loc{text-transform:none;letter-spacing:0;font-style:italic;font-weight:500;font-size:1.25rem}
+.event p.desc{margin:0 0 14px;max-width:52ch}
+.actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px 20px}
+.chip{display:inline-block;border:1px solid var(--rule);color:var(--accent);font-size:.78rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;padding:4px 12px 4px 14px;font-variant-numeric:tabular-nums}
+.more{color:var(--accent);font-size:.82rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:2px}
+.more:hover{opacity:.8}.past{margin-top:52px}
+.empty{color:var(--muted);border:1px dashed var(--line);padding:20px;margin:0;text-align:center;font-style:italic}
+.crumb{margin:30px 0 18px}.crumb a{color:var(--muted);text-decoration:none;font-weight:700;font-size:.82rem;letter-spacing:.2em;text-transform:uppercase}
+.crumb a:hover,.crumb a:focus-visible{color:var(--accent);text-decoration:underline;text-underline-offset:5px}
+.potluck{margin-top:52px}
+.kicker{margin:0 0 10px;text-align:center;font-size:.95rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase}
+.kicker::before{content:"";display:block;width:120px;height:1px;background:var(--rule);margin:0 auto 20px}
+.lede{margin:0 auto 8px;max-width:48ch;text-align:center;color:var(--muted);font-style:italic;font-size:1.25rem}
+.count{margin:0 0 24px;text-align:center;color:var(--muted);font-size:1.05rem;font-variant-numeric:tabular-nums}
+.kind{display:grid;grid-template-columns:140px minmax(0,1fr);gap:8px 22px;padding-block:18px;border-top:1px solid var(--line)}
+.kind:last-child{border-bottom:1px solid var(--line)}
+.kind h3{margin:0;font-family:var(--font-serif);font-size:.9rem;font-weight:700;color:var(--accent);letter-spacing:.2em;text-transform:uppercase;display:flex;align-items:baseline;gap:10px;line-height:1.8}
+.kind h3 .n{color:var(--muted);letter-spacing:.05em;font-variant-numeric:tabular-nums}
+.dishes{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;min-width:0}
+.dishes li{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 14px;min-width:0}
+.dishes .dish{font-weight:700;font-size:1.3rem;overflow-wrap:anywhere}.dishes .by{color:var(--muted);font-style:italic}
+.dishes .note{color:var(--muted);font-size:1.05rem;flex-basis:100%;overflow-wrap:anywhere}.dishes .none{color:var(--muted);font-style:italic}
+.compose{margin-top:44px;background:var(--surface);border:1px solid var(--line);padding:26px 24px}
+.compose .hint{margin:0 0 20px;color:var(--muted);font-style:italic;max-width:50ch}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field label{font-size:.8rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase}.field label span{color:var(--muted);font-weight:500;letter-spacing:.1em}
+input[type="text"],select,textarea{font:inherit;font-size:1.15rem;font-weight:500;color:var(--fg);background:var(--bg);border:1px solid var(--rule);border-radius:0;padding:10px 12px;width:100%;min-height:46px}
+input::placeholder,textarea::placeholder{color:var(--muted);opacity:.85;font-style:italic}textarea{resize:vertical;min-height:88px;line-height:1.4}.field.wide{grid-column:1/-1}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;margin-top:18px}
+button.primary{font:inherit;font-size:.85rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;background:var(--accent);color:var(--accent-fg);border:0;border-radius:0;padding:13px 26px 13px 28px;min-height:46px;cursor:pointer}
+button.primary:hover:not(:disabled){opacity:.9}button.primary:disabled{opacity:.4;cursor:not-allowed}.status{color:var(--accent);font-style:italic;font-size:1.1rem}
+.after{margin:18px 0 0;color:var(--muted);font-size:1.05rem;max-width:52ch}
+footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);color:var(--muted);font-style:italic;text-align:center}
+.lg{padding-block:8px 36px}.lg+.lg{border-top:1px solid var(--line);padding-top:36px}.lg h3{margin-bottom:4px}
+.lg .when{margin:0 0 18px;color:var(--muted);font-style:italic;font-size:1.25rem}.facts{margin:0;display:flex;flex-direction:column}
+.fact{display:grid;grid-template-columns:140px minmax(0,1fr);gap:4px 22px;padding-block:16px;border-top:1px solid var(--line)}.fact:last-child{border-bottom:1px solid var(--line)}
+.fact dt{margin:0;font-size:.9rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);line-height:1.8}
+.fact dd{margin:0;min-width:0;overflow-wrap:anywhere}.fact dd .tba{color:var(--muted);font-style:italic}
+.fact dd a{display:inline-block;margin-top:6px;color:var(--accent);font-size:.82rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:2px}
+@media(max-width:480px){.fact{grid-template-columns:1fr;gap:2px}.event{grid-template-columns:1fr;padding-inline:0}.date{flex-direction:row;align-items:baseline;justify-content:flex-start;gap:12px;min-width:0;padding:0 0 12px;border-right:0;text-align:left}.date .w,.date .m{padding-left:0}.date .d{font-size:2.2rem}.kind{grid-template-columns:1fr;gap:10px}.grid{grid-template-columns:1fr}.compose{padding:22px 16px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="mast"><div class="brand">The Garretts</div><nav aria-label="Primary"><a href="#events">Events</a><a href="#logistics" data-go="logistics">Logistics</a><a href="#guests" data-go="guests">Guests</a><a href="#past">Past events</a></nav></header>
+<noscript><p class="empty">Please enable JavaScript to view events and the potluck board.</p></noscript>
+<main id="home">
+<section class="intro"><h1>Come hang out with us.</h1><p>Here is what we are hosting and when. New events show up on this page as we plan them.</p></section>
+<section id="events" aria-labelledby="up-h"><h2 class="label" id="up-h">Upcoming events</h2><ul class="events" id="upcoming"></ul></section>
+<section class="past" id="past" aria-labelledby="past-h"><h2 class="label" id="past-h">Past events</h2><ul class="events" id="pastList"></ul></section>
+</main>
+<main id="eventView" hidden>
+<p class="crumb"><a href="#" data-go="">&larr; All events</a></p><ul class="events" id="evHead"></ul>
+<section class="potluck" aria-labelledby="pl-h"><h2 class="label" id="pl-h">Potluck</h2><p class="kicker">Bring your favorite dish or drink</p><p class="lede">See what everyone is bringing, grouped by course, so we do not end up with six pies.</p><p class="count" id="plCount"></p><div id="plBoard"></div></section>
+<section class="compose" aria-labelledby="add-h"><h2 class="label" id="add-h">Claim a dish</h2><p class="hint">Enter your dish, then copy the message to send to us.</p>
+<form id="plForm" novalidate><div class="grid">
+<div class="field"><label for="pl-name">Your name</label><input type="text" id="pl-name" autocomplete="name" maxlength="60" required></div>
+<div class="field"><label for="pl-dish">What you are bringing</label><input type="text" id="pl-dish" autocomplete="off" maxlength="80" required></div>
+<div class="field"><label for="pl-kind">Course</label><select id="pl-kind"><option value="main">Main</option><option value="side" selected>Side</option><option value="dessert">Dessert</option><option value="drink">Drink</option><option value="other">Other</option></select></div>
+<div class="field"><label for="pl-note">Note <span>(optional)</span></label><input type="text" id="pl-note" autocomplete="off" maxlength="100" placeholder="Serves 8, vegetarian, nut-free"></div>
+<div class="field wide"><label for="pl-msg">Your message</label><textarea id="pl-msg" readonly placeholder="Add your name and dish and your message appears here."></textarea></div>
+</div><div class="row"><button type="submit" class="primary" id="pl-copy" disabled>Copy message</button><span class="status" id="pl-status" role="status" aria-live="polite"></span></div></form>
+<p class="after">Then post it in the comments on our Partiful event, or text it to us. This form does not save your dish. We add dishes here as messages come in.</p>
+</section></main>
+<main id="logisticsView" hidden><section class="intro"><h1>The details.</h1><p>Where to be, when to arrive, and what to bring for each event. Each new event gets its own entry here.</p></section><div id="lgList"></div></main>
+<main id="guestsView" hidden><section class="intro"><h1>The guest list.</h1><p>Who is coming, grouped by how we know them. To request an addition, use the message form below.</p></section><div id="gsList"></div>
+<section class="compose" aria-labelledby="gs-h"><h2 class="label" id="gs-h">Add a guest</h2><p class="hint">Fill this in and copy the message it writes for you.</p>
+<form id="gsForm" novalidate><div class="grid">
+<div class="field"><label for="gs-name">Guest name</label><input type="text" id="gs-name" autocomplete="off" maxlength="60" required></div>
+<div class="field"><label for="gs-group">Group</label><select id="gs-group"></select></div>
+<div class="field"><label for="gs-plus">Bringing someone? <span>(optional)</span></label><input type="text" id="gs-plus" autocomplete="off" maxlength="60" placeholder="Their name"></div>
+<div class="field" id="gs-event-field"><label for="gs-event">Event</label><select id="gs-event"></select></div>
+<div class="field wide"><label for="gs-msg">Your message</label><textarea id="gs-msg" readonly placeholder="Add a guest name and your message appears here."></textarea></div>
+</div><div class="row"><button type="submit" class="primary" id="gs-copy" disabled>Copy message</button><span class="status" id="gs-status" role="status" aria-live="polite"></span></div></form>
+<p class="after">Then post it in the comments on our Partiful event, or text it to us. This form does not save a guest. We add names here as messages come in.</p></section>
+</main><footer>The Garretts &middot; Long Beach, California</footer>
+</div>
+<script>
+// This is the complete static site, with front-end fixes included below.
+// Supabase is not connected in this file. The other chat can replace the
+// copy-message handlers with its database handlers and keep the time/navigation fixes.
+// The guest names have not been supplied here. Keep your existing guest data
+// when merging this file. Anything embedded in public HTML is publicly readable.
+// Optional event fields: endDate: "2026-11-21", endTime: "20:00".
+var EVENTS = [{
+ slug:"friendsgiving",title:"Friendsgiving",date:"2026-11-21",time:"14:00",
+ location:"Location to be announced",eyebrow:"You’re invited to",
+ tagline:["Good food","Good company","Same energy"],
+ description:"Bring your favorite dish or drink. See the potluck board, then send us what you plan to bring.",
+ potluck:true,dishes:[],guests:[],
+ logistics:[{label:"Food",value:"Potluck. Bring a favorite dish or drink.",link:"friendsgiving",linkText:"Claim a dish"},{label:"Parking",value:"To be announced",tba:true}]
+}];
+var GROUPS=["Family","Friends","Neighbors","Work","Other"];
+var KINDS=[{id:"main",label:"Mains"},{id:"side",label:"Sides"},{id:"dessert",label:"Desserts"},{id:"drink",label:"Drinks"},{id:"other",label:"Other"}];
+var MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+var DAYS=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+var BAR='<span class="bar" aria-hidden="true"></span>';
+// Time functions and event rendering are installed by the integrated fixes below.
+var parse,fmtTime,untilLabel,card,renderLogistics;
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+var up=[],past=[],current=null;
+var homeEl=document.getElementById("home"),viewEl=document.getElementById("eventView"),lgEl=document.getElementById("logisticsView"),gsEl=document.getElementById("guestsView");
+function findBySlug(s){return EVENTS.find(function(e){return e.slug===s})||null}
+function renderBoard(e){
+ var list=e.dishes||[],total=list.length;
+ document.getElementById("plCount").textContent=total?total+(total===1?" dish claimed":" dishes claimed"):"Nothing claimed yet. Yours can be the first.";
+ document.getElementById("plBoard").innerHTML=KINDS.map(function(k){
+  var items=list.filter(function(d){return (d.kind||"other")===k.id});
+  var rows=items.length?items.map(function(d){return '<li><span class="dish">'+esc(d.dish)+'</span><span class="by">'+esc(d.who)+'</span>'+(d.note?'<span class="note">'+esc(d.note)+'</span>':'')+'</li>'}).join(""):'<li class="none">Nobody yet</li>';
+  return '<section class="kind" aria-label="'+esc(k.label)+'"><h3>'+esc(k.label)+'<span class="n">'+items.length+'</span></h3><ul class="dishes">'+rows+'</ul></section>';
+ }).join("");
+}
+function renderEvent(e){current=e;document.getElementById("evHead").innerHTML=card(e,parse(e),false,false);renderBoard(e);syncMessage()}
+function fact(label,value,tba,link,linkText){return '<div class="fact"><dt>'+esc(label)+'</dt><dd>'+(tba?'<span class="tba">'+esc(value)+'</span>':esc(value))+(link?'<br><a href="#'+esc(link)+'" data-go="'+esc(link)+'">'+esc(linkText||"More")+'</a>':'')+'</dd></div>'}
+function headcount(list){return list.reduce(function(n,g){return n+1+(g.plus?1:0)},0)}
+function renderGuests(){
+ document.getElementById("gsList").innerHTML=up.concat(past).map(function(x){
+  var e=x.e,list=e.guests||[],total=headcount(list),names=GROUPS.slice();
+  list.forEach(function(g){var k=g.group||"Other";if(names.indexOf(k)<0)names.push(k)});
+  var groups=names.map(function(k){
+   var items=list.filter(function(g){return(g.group||"Other")===k});if(!items.length)return "";
+   var rows=items.map(function(g){return '<li><span class="dish">'+esc(g.who)+'</span>'+(g.plus?'<span class="by">with '+esc(g.plus)+'</span>':'')+'</li>'}).join("");
+   return '<section class="kind" aria-label="'+esc(k)+'"><h3>'+esc(k)+'<span class="n">'+headcount(items)+'</span></h3><ul class="dishes">'+rows+'</ul></section>';
+  }).join("");
+  return '<section class="lg" aria-label="'+esc(e.title)+'"><h3>'+esc(e.title)+'</h3><p class="when">'+(total?total+(total===1?" guest":" guests"):"No guests yet")+'</p>'+(list.length?groups:'<p class="empty">No guests listed yet. Names show up here as they are added.</p>')+'</section>';
+ }).join("")||'<p class="empty">No events on the calendar right now. Check back soon.</p>';
+}
+function route(){
+ var h=location.hash.slice(1),e=h?findBySlug(h):null;
+ if(h==="logistics"||h==="guests"){
+  if(h==="logistics")renderLogistics();else renderGuests();
+  homeEl.hidden=true;viewEl.hidden=true;lgEl.hidden=h!=="logistics";gsEl.hidden=h!=="guests";window.scrollTo(0,0);return;
+ }
+ lgEl.hidden=true;gsEl.hidden=true;
+ if(e&&e.potluck){renderEvent(e);homeEl.hidden=true;viewEl.hidden=false;window.scrollTo(0,0)}
+ else{viewEl.hidden=true;homeEl.hidden=false;var t=h?document.getElementById(h):null;if(t&&t.scrollIntoView)t.scrollIntoView()}
+}
+var nameEl=document.getElementById("pl-name"),dishEl=document.getElementById("pl-dish"),kindEl=document.getElementById("pl-kind"),noteEl=document.getElementById("pl-note"),msgEl=document.getElementById("pl-msg"),copyBtn=document.getElementById("pl-copy"),statusEl=document.getElementById("pl-status");
+function buildMessage(){
+ var who=nameEl.value.trim().replace(/\s+/g," "),dish=dishEl.value.trim().replace(/\s+/g," "),note=noteEl.value.trim().replace(/\s+/g," ");
+ if(!who||!dish)return "";
+ return(current?current.title:"Friendsgiving")+" potluck: "+who+" is bringing "+dish+" ("+kindEl.value+")."+(note?" "+note:"");
+}
+function syncMessage(){var m=buildMessage();msgEl.value=m;copyBtn.disabled=!m;statusEl.textContent=""}
+[nameEl,dishEl,noteEl].forEach(function(el){el.addEventListener("input",syncMessage)});kindEl.addEventListener("change",syncMessage);
+function copyMessage(input,status){
+ var message=input.value;if(!message)return;
+ function manual(){input.focus();input.select();var done=false;try{done=document.execCommand("copy")}catch(x){}status.textContent=done?"Copied. Send this message to us to request the addition.":"Select the message above and copy it."}
+ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(message).then(function(){status.textContent="Copied. Send this message to us to request the addition."},manual)}else manual();
+}
+document.getElementById("plForm").addEventListener("submit",function(ev){ev.preventDefault();copyMessage(msgEl,statusEl)});
+var gsName=document.getElementById("gs-name"),gsGroup=document.getElementById("gs-group"),gsPlus=document.getElementById("gs-plus"),gsEvent=document.getElementById("gs-event"),gsMsg=document.getElementById("gs-msg"),gsCopy=document.getElementById("gs-copy"),gsStatus=document.getElementById("gs-status");
+gsGroup.innerHTML=GROUPS.map(function(g){return '<option value="'+esc(g)+'">'+esc(g)+'</option>'}).join("");
+gsEvent.innerHTML=EVENTS.map(function(e){return '<option value="'+esc(e.slug)+'">'+esc(e.title)+'</option>'}).join("");
+document.getElementById("gs-event-field").hidden=EVENTS.length<2;
+function buildGuestMessage(){var who=gsName.value.trim().replace(/\s+/g," "),plus=gsPlus.value.trim().replace(/\s+/g," ");if(!who)return "";var e=findBySlug(gsEvent.value);return(e?e.title:"Event")+" guest list: please add "+who+" ("+gsGroup.value+")"+(plus?", bringing "+plus:"")+"."}
+function syncGuestMessage(){var m=buildGuestMessage();gsMsg.value=m;gsCopy.disabled=!m;gsStatus.textContent=""}
+[gsName,gsPlus].forEach(function(el){el.addEventListener("input",syncGuestMessage)});gsGroup.addEventListener("change",syncGuestMessage);gsEvent.addEventListener("change",syncGuestMessage);
+document.getElementById("gsForm").addEventListener("submit",function(ev){ev.preventDefault();copyMessage(gsMsg,gsStatus)});
+</script>
+
+<!-- Integrated front-end fixes. No separate patch is needed. -->
+<script>
+(function () {
+  "use strict";
+  if (window.garrettsPatchApplied) return;
+  if (typeof EVENTS === "undefined" || typeof route !== "function") {
+    console.error("Garretts patch needs the original site script before it.");
+    return;
+  }
+  window.garrettsPatchApplied = true;
+  var ZONE = "America/Los_Angeles";
+  var partsFormatter = new Intl.DateTimeFormat("en-US", {
+    timeZone: ZONE, year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23"
+  });
+  function parts(date) {
+    var p = {};
+    partsFormatter.formatToParts(date).forEach(function (x) {
+      if (x.type !== "literal") p[x.type] = Number(x.value);
+    });
+    return p;
+  }
+  function wallTime(date, time) {
+    var d = date.split("-").map(Number), t = time.split(":").map(Number);
+    var wanted = Date.UTC(d[0], d[1] - 1, d[2], t[0], t[1]);
+    var guess = wanted;
+    for (var i = 0; i < 4; i++) {
+      var p = parts(new Date(guess));
+      var observed = Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute, p.second);
+      var difference = wanted - observed;
+      guess += difference;
+      if (!difference) break;
+    }
+    return new Date(guess);
+  }
+  function dayNumber(date) {
+    var p = parts(date);
+    return Date.UTC(p.year, p.month - 1, p.day) / 86400000;
+  }
+  function eventEnd(e) {
+    if (e.endTime) return wallTime(e.endDate || e.date, e.endTime);
+    var d = (e.endDate || e.date).split("-").map(Number);
+    var tomorrow = new Date(Date.UTC(d[0], d[1] - 1, d[2] + 1));
+    return wallTime(tomorrow.toISOString().slice(0, 10), "00:00");
+  }
+  function dateLabel(date) {
+    return new Intl.DateTimeFormat("en-US", {
+      timeZone: ZONE, weekday: "short", month: "short", day: "numeric", year: "numeric"
+    }).format(date);
+  }
+  parse = function (e) { return wallTime(e.date, e.time); };
+  fmtTime = function (date) {
+    return new Intl.DateTimeFormat("en-US", {
+      timeZone: ZONE, hour: "numeric", minute: "2-digit", timeZoneName: "short"
+    }).format(date);
+  };
+  untilLabel = function (date) {
+    var n = dayNumber(date) - dayNumber(new Date());
+    if (n === 0) return "Today";
+    if (n === 1) return "Tomorrow";
+    return n > 1 ? "In " + n + " days" : "";
+  };
+  esc = function (s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  };
+  card = function (e, dt, showChip, showLink) {
+    var p = parts(dt);
+    var weekday = new Intl.DateTimeFormat("en-US", { timeZone: ZONE, weekday: "short" }).format(dt);
+    var month = new Intl.DateTimeFormat("en-US", { timeZone: ZONE, month: "short" }).format(dt);
+    var chip = showChip ? untilLabel(dt) : "";
+    if (showChip && !chip && eventEnd(e) > new Date()) chip = "In progress";
+    var link = showLink && e.potluck
+      ? '<a class="more" href="#' + esc(e.slug) + '" data-go="' + esc(e.slug) + '">Potluck: see what to bring</a>' : "";
+    var tag = e.tagline && e.tagline.length
+      ? '<span class="short"></span><p class="tag">' + e.tagline.map(function (t) { return '<span>' + esc(t) + '</span>'; }).join(BAR) + '</p>' : "";
+    return '<li class="event"><div class="date" aria-hidden="true"><span class="w">' + weekday + '</span><span class="d">' + p.day + '</span><span class="m">' + month + '</span></div><div>' +
+      (e.eyebrow ? '<p class="eyebrow">' + esc(e.eyebrow) + '</p>' : '') + '<h3>' + esc(e.title) + '</h3>' + tag +
+      '<p class="meta"><span>' + esc(dateLabel(dt)) + '</span><span>' + esc(fmtTime(dt)) + '</span><span class="loc">' + esc(e.location) + '</span></p>' +
+      '<p class="desc">' + esc(e.description) + '</p>' +
+      (chip || link ? '<div class="actions">' + (chip ? '<span class="chip">' + esc(chip) + '</span>' : '') + link + '</div>' : '') + '</div></li>';
+  };
+  renderLogistics = function () {
+    document.getElementById("lgList").innerHTML = up.concat(past).map(function (x) {
+      var e = x.e;
+      return '<section class="lg" aria-label="' + esc(e.title) + '"><h3>' + esc(e.title) + '</h3><dl class="facts">' +
+        fact("When", dateLabel(x.dt) + " at " + fmtTime(x.dt)) +
+        fact("Where", e.location, /announced/i.test(e.location)) +
+        (e.logistics || []).map(function (r) { return fact(r.label, r.value, r.tba, r.link, r.linkText); }).join("") + '</dl></section>';
+    }).join("") || '<p class="empty">No events on the calendar right now. Check back soon.</p>';
+  };
+  function refreshLists() {
+    up = []; past = [];
+    EVENTS.forEach(function (e) {
+      (eventEnd(e) > new Date() ? up : past).push({ e: e, dt: parse(e) });
+    });
+    up.sort(function (a, b) { return a.dt - b.dt; });
+    past.sort(function (a, b) { return b.dt - a.dt; });
+    document.getElementById("upcoming").innerHTML = up.map(function (x) { return card(x.e, x.dt, true, true); }).join("") || '<li class="empty">No events on the calendar right now. Check back soon.</li>';
+    document.getElementById("pastList").innerHTML = past.map(function (x) { return card(x.e, x.dt, false, false); }).join("") || '<li class="empty">Nothing here yet. Our first event is still ahead.</li>';
+  }
+  // Intercept the old click handler so each navigation is routed once.
+  document.addEventListener("click", function (ev) {
+    if (ev.defaultPrevented || ev.button !== 0 || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) return;
+    var a = ev.target.closest && ev.target.closest('a[href^="#"]');
+    if (!a || a.hasAttribute("download") || a.target === "_blank") return;
+    var href = a.getAttribute("href");
+    ev.preventDefault(); ev.stopImmediatePropagation();
+    if (location.hash !== href && !(href === "#" && !location.hash)) {
+      location.hash = href.slice(1);
+    } else route();
+  }, true);
+  var originalRoute = route;
+  route = function () {
+    refreshLists();
+    originalRoute();
+    var h = location.hash.slice(1);
+    document.querySelectorAll('nav a').forEach(function (a) {
+      var key = a.getAttribute("href").slice(1);
+      var selected = key === h || (key === "events" && (!h || findBySlug(h)));
+      if (selected) a.setAttribute("aria-current", "page");
+      else a.removeAttribute("aria-current");
+    });
+    document.title = (h === "guests" ? "Guests" : h === "logistics" ? "Logistics" : findBySlug(h) ? findBySlug(h).title : "Events") + " | The Garretts";
+    if (!h) window.scrollTo(0, 0);
+  };
+  // The original hashchange listener holds the old function reference.
+  window.removeEventListener("hashchange", originalRoute);
+  window.addEventListener("hashchange", route);
+  function clean(value) { return value.trim().replace(/\s+/g, " "); }
+  function key(value) { return clean(value).normalize("NFKC").toLocaleLowerCase("en-US"); }
+  function duplicateDish() {
+    return ((current && current.dishes) || []).find(function (d) { return key(d.dish) === key(dishEl.value); });
+  }
+  function isRepeatedClaim() {
+    return ((current && current.dishes) || []).some(function (d) {
+      return key(d.dish) === key(dishEl.value) && key(d.who) === key(nameEl.value);
+    });
+  }
+  function validateDish() {
+    nameEl.setCustomValidity(clean(nameEl.value) ? "" : "Please enter your name.");
+    dishEl.setCustomValidity(!clean(dishEl.value) ? "Please enter a dish or drink." : isRepeatedClaim() ? "This name and dish are already listed." : "");
+    var duplicate = clean(dishEl.value) && duplicateDish();
+    statusEl.textContent = duplicate ? (isRepeatedClaim() ? "This name and dish are already listed." : "Already listed by " + duplicate.who + ". You can bring another portion or choose something else.") : "";
+    copyBtn.disabled = !clean(nameEl.value) || !clean(dishEl.value) || isRepeatedClaim();
+  }
+  nameEl.required = true; dishEl.required = true; gsName.required = true;
+  function updateDish() { syncMessage(); validateDish(); }
+  [nameEl, dishEl, noteEl].forEach(function (el) { el.addEventListener("input", updateDish); });
+  kindEl.addEventListener("change", updateDish);
+  document.getElementById("plForm").addEventListener("submit", function (ev) {
+    syncMessage(); validateDish();
+    if (!this.reportValidity() || copyBtn.disabled) {
+      ev.preventDefault(); ev.stopImmediatePropagation();
+    }
+  }, true);
+  function validateGuest() {
+    gsName.setCustomValidity(clean(gsName.value) ? "" : "Please enter the guest's name.");
+    gsCopy.disabled = !clean(gsName.value) || !findBySlug(gsEvent.value);
+  }
+  gsName.addEventListener("input", validateGuest);
+  gsEvent.addEventListener("change", validateGuest);
+  document.getElementById("gsForm").addEventListener("submit", function (ev) {
+    syncGuestMessage(); validateGuest();
+    if (!this.reportValidity() || gsCopy.disabled) {
+      ev.preventDefault(); ev.stopImmediatePropagation();
+    }
+  }, true);
+  // Make the current copy-message workflow explicit until Supabase replaces it.
+  document.querySelector('#eventView .compose .hint').textContent = "Enter your dish, then copy the message to send to us.";
+  document.querySelector('#guestsView .intro p').textContent = "Who is coming, grouped by how we know them. To request an addition, use the message form below.";
+  var originalRenderEvent = renderEvent;
+  renderEvent = function (e) { originalRenderEvent(e); validateDish(); };
+  route(); validateGuest();
+  setInterval(function () {
+    refreshLists();
+    if (!viewEl.hidden && current) {
+      document.getElementById("evHead").innerHTML = card(current, parse(current), false, false);
+    }
+  }, 60000);
+})();
+</script>
+
+</body>
+</html>
