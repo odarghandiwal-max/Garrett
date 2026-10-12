@@ -16,7 +16,7 @@ $("eventView").querySelector(".lede").textContent="Here is what everyone has sig
 $("pl-h").textContent="Who’s bringing what";
 const names=PARTIES.flatMap(p=>p.names.concat(p.kids||[]));
 const blankForm='<h2 class="label" id="add-h">Choose something to bring</h2><p class="hint">Pick an available item or bring your own. Add your name and submit.</p>'+
-'<form id="signupForm"><fieldset class="available-items"><legend class="sr-only">Available items</legend><div id="menuRows"></div><label class="item-option own-option"><input type="radio" name="item" value="custom" required><span>Bring my own</span></label></fieldset>'+
+'<form id="signupForm"><fieldset class="available-items"><legend class="sr-only">Available items</legend><div id="menuRows"></div><label class="item-option own-option"><input type="radio" name="item" value="custom" required><span>Bring my own</span></label><label class="item-option own-option"><input type="radio" name="item" value="myself" required><span>Just bringing myself</span></label></fieldset>'+
 '<div class="grid"><div class="field wide" id="customField" hidden><label for="bringing">What are you bringing?</label><input id="bringing" type="text" maxlength="160" placeholder="Type your dish, drink or item"></div>'+
 '<div class="field wide"><label for="guestName">Your name</label><input id="guestName" type="text" autocomplete="name" list="guestNames" maxlength="60" required placeholder="Your name"><datalist id="guestNames">'+names.map(n=>'<option value="'+esc(n)+'"></option>').join("")+'</datalist></div></div>'+
 '<input id="course" type="hidden" value="side">'+
@@ -55,7 +55,7 @@ function renderAvailable(){
  document.querySelectorAll('input[name="item"]').forEach(input=>{input.onchange=()=>{
  const custom=input.value==="custom";$("customField").hidden=!custom;
  if(custom){$("bringing").value="";$("course").value="other";$("bringing").required=true;$("bringing").focus();}
- else{const [mi,di]=input.value.split(":").map(Number);$("bringing").value=MENU[mi][2][di];$("course").value=MENU[mi][1];$("bringing").required=false;}
+ else if(input.value==="myself"){$("bringing").value="Just bringing myself";$("course").value="other";$("bringing").required=false;}else{const [mi,di]=input.value.split(":").map(Number);$("bringing").value=MENU[mi][2][di];$("course").value=MENU[mi][1];$("bringing").required=false;}
  };});
 }
 function showForm(){$("eventView").hidden=false;$("guestsView").hidden=true;$("logisticsView").hidden=true;$("signupForm").scrollIntoView({behavior:"smooth",block:"start"});$("guestName").focus();}
@@ -64,7 +64,7 @@ function edit(id){
  const e=entries.find(e=>e.id===id);if(!e||!owned[id])return;
  currentId=id;currentToken=owned[id];renderAvailable();
  $("guestName").value=e.name;$("bringing").value=e.bringing;$("course").value=e.kind;$("drinkPreference").value=e.drink_preference;$("saveButton").textContent="Save changes";$("newButton").hidden=false;$("saveStatus").textContent="";setEditLink();
- const choice=Array.from(document.querySelectorAll('input[name="item"]')).find(input=>{if(input.value==="custom")return false;const [mi,di]=input.value.split(":").map(Number);return MENU[mi][2][di]===e.bringing;});
+ const choice=Array.from(document.querySelectorAll('input[name="item"]')).find(input=>{if(input.value==="custom")return false;if(input.value==="myself")return e.bringing==="Just bringing myself";const [mi,di]=input.value.split(":").map(Number);return MENU[mi][2][di]===e.bringing;});
  if(choice){choice.checked=true;$("customField").hidden=true;}else{document.querySelector('input[name="item"][value="custom"]').checked=true;$("customField").hidden=false;}
  showForm();
 }
