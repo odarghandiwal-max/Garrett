@@ -29,14 +29,14 @@ $("evHead").innerHTML='<li class="event invitation-event"><h1 class="sr-only">Fr
 $("eventView").querySelector(".lede").textContent="Here is what everyone has signed up to bring. Ham and turkey are on us.";
 $("pl-h").textContent="Who’s bringing what";
 const names=PARTIES.flatMap(p=>p.names.concat(p.kids||[]));
-const blankForm='<h2 class="label" id="add-h">Choose something to bring</h2><p class="hint">Planning for about 30 people. Each sign-up covers the portion shown. Pick an item, add your name, and submit.</p>'+
+const blankForm='<h2 class="label" id="add-h">Choose something to bring</h2><p class="hint">Planning for about 30 people. Each sign-up covers the portion shown. Pick an item, add your name, and submit. Anyone can edit the list.</p>'+
 '<form id="signupForm"><fieldset class="available-items"><legend class="sr-only">Available items</legend><div id="menuRows"></div><label class="item-option own-option"><input type="radio" name="item" value="custom" required><span>Bring my own</span></label><label class="item-option own-option"><input type="radio" name="item" value="myself" required><span>Just bringing myself</span></label></fieldset>'+
 '<div class="grid"><div class="field wide" id="customField" hidden><label for="bringing">What are you bringing?</label><input id="bringing" type="text" maxlength="160" placeholder="Type your dish, drink or item"></div>'+
 '<div class="field wide"><label for="guestName">Your name</label><input id="guestName" type="text" autocomplete="name" list="guestNames" maxlength="60" required placeholder="Your name"><datalist id="guestNames">'+names.map(n=>'<option value="'+esc(n)+'"></option>').join("")+'</datalist></div></div>'+
 '<input id="course" type="hidden" value="side">'+
 '<details class="drink-details"><summary>Drink preference (optional)</summary><label for="drinkPreference" class="sr-only">What do you like to drink?</label><input id="drinkPreference" type="text" maxlength="160" placeholder="For example: sparkling water or Pinot Noir"><p class="field-help">Tell us what you like; you do not have to bring it.</p></details>'+
 '<div class="row"><button class="primary" id="saveButton" type="submit" disabled>Submit</button><button class="text-button" id="newButton" type="button" hidden>Add another item</button><span class="status" id="saveStatus" role="status" aria-live="polite"></span></div></form>'+
-'<div id="savedLink" hidden><p class="after">Keep this private link to edit your entry on another device.</p><div class="row"><input id="editLink" type="text" readonly aria-label="Your private edit link"><button id="copyLink" class="text-button" type="button">Copy edit link</button></div></div>';
+'';
 $("eventView").querySelector(".compose").innerHTML=blankForm;
 $("evHead").after($("eventView").querySelector(".compose"));
 $("guestsView").querySelector(".compose").remove();
@@ -51,7 +51,7 @@ function render(){
  $("plCount").textContent=combinedEntries().length?combinedEntries().length+" guest "+(combinedEntries().length===1?"item":"items")+" signed up · ham and turkey are covered":"Ham and turkey are covered. Pick a side, dessert or drink below.";
  $("plBoard").innerHTML=KINDS.map(k=>{
  const items=all.filter(g=>g.kind===k[0]);
- return '<section class="kind"><h3>'+k[1]+' <span class="n">'+items.length+'</span></h3><ul class="dishes">'+(items.length?items.map(g=>'<li><span class="dish">'+esc(g.bringing)+'</span>'+(PLAN[g.bringing]?'<span class="portion">'+esc(PLAN[g.bringing].unit)+'</span>':"")+'<span class="by">'+esc(g.name)+'</span>'+(g.id&&owned[g.id]?'<button type="button" class="text-button edit-entry" data-id="'+esc(g.id)+'">Edit my item</button>':"")+'</li>').join(""):'<li class="none">Open for sign-ups</li>')+'</ul></section>';
+ return '<section class="kind"><h3>'+k[1]+' <span class="n">'+items.length+'</span></h3><ul class="dishes">'+(items.length?items.map(g=>'<li><span class="dish">'+esc(g.bringing)+'</span>'+(PLAN[g.bringing]?'<span class="portion">'+esc(PLAN[g.bringing].unit)+'</span>':"")+'<span class="by">'+esc(g.name)+'</span>'+(g.id?'<button type="button" class="text-button edit-entry" data-id="'+esc(g.id)+'">Edit</button>':"")+'</li>').join(""):'<li class="none">Open for sign-ups</li>')+'</ul></section>';
  }).join("");
  renderAvailable();
  $("plBoard").querySelectorAll(".edit-entry").forEach(b=>b.addEventListener("click",()=>edit(b.dataset.id)));
@@ -81,16 +81,15 @@ function renderAvailable(){
  };});
 }
 function showForm(){$("eventView").hidden=false;$("guestsView").hidden=true;$("logisticsView").hidden=true;$("signupForm").scrollIntoView({behavior:"smooth",block:"start"});$("guestName").focus();}
-function reset(){currentId=null;currentToken=null;$("signupForm").reset();$("course").value="side";$("saveButton").textContent="Submit";$("newButton").hidden=true;$("saveStatus").textContent="";$("savedLink").hidden=true;$("customField").hidden=true;$("bringing").required=false;renderAvailable();}
+function reset(){currentId=null;currentToken=null;$("signupForm").reset();$("course").value="side";$("saveButton").textContent="Submit";$("newButton").hidden=true;$("saveStatus").textContent="";$("customField").hidden=true;$("bringing").required=false;renderAvailable();}
 function edit(id){
- const e=entries.find(e=>e.id===id);if(!e||!owned[id])return;
+ const e=entries.find(e=>e.id===id);if(!e)return;
  currentId=id;currentToken=owned[id];renderAvailable();
- $("guestName").value=e.name;$("bringing").value=e.bringing;$("course").value=e.kind;$("drinkPreference").value=e.drink_preference;$("saveButton").textContent="Save changes";$("newButton").hidden=false;$("saveStatus").textContent="";setEditLink();
+ $("guestName").value=e.name;$("bringing").value=e.bringing;$("course").value=e.kind;$("drinkPreference").value=e.drink_preference;$("saveButton").textContent="Save changes";$("newButton").hidden=false;$("saveStatus").textContent="";
  const choice=Array.from(document.querySelectorAll('input[name="item"]')).find(input=>{if(input.value==="custom")return false;if(input.value==="myself")return e.bringing==="Just bringing myself";const [mi,di]=input.value.split(":").map(Number);return MENU[mi][2][di]===e.bringing;});
  if(choice){choice.checked=true;$("customField").hidden=true;}else{document.querySelector('input[name="item"][value="custom"]').checked=true;$("customField").hidden=false;}
  showForm();
 }
-function setEditLink(){const u=new URL(location.href);u.hash="friendsgiving?entry="+encodeURIComponent(currentId)+"&edit="+encodeURIComponent(currentToken);$("editLink").value=u.href;$("savedLink").hidden=false;}
 function route(){
  const h=location.hash.slice(1).split("?")[0]||"friendsgiving";
  ["home","eventView","guestsView","logisticsView"].forEach(id=>$(id).hidden=true);
@@ -121,13 +120,12 @@ $("signupForm").addEventListener("submit",async ev=>{
  try{
  const data=await api("rpc/garrett_save_signup","POST",{p_id:id,p_token:token,p_name:clean("guestName"),p_bringing:clean("bringing"),p_kind:$("course").value,p_note:entries.find(e=>e.id===currentId)?.note||"",p_drink_preference:clean("drinkPreference")});
  const row=Array.isArray(data)?data[0]:data;if(!row||row.id!==id)throw Error("SAVE_NOT_CONFIRMED");
- currentId=id;currentToken=token;remember(id,token);entries=entries.filter(e=>e.id!==id).concat(row);render();setEditLink();$("saveStatus").textContent="Saved! You’re on the list.";$("saveButton").textContent="Save changes";$("newButton").hidden=false;
+ currentId=id;currentToken=token;remember(id,token);entries=entries.filter(e=>e.id!==id).concat(row);render();$("saveStatus").textContent="Saved! You’re on the list.";$("saveButton").textContent="Save changes";$("newButton").hidden=false;
  }catch(e){currentId=id;currentToken=token;remember(id,token);$("saveStatus").textContent="Could not confirm the save. Please try again; your form is still here.";}
  finally{saving=false;$("saveButton").disabled=!ready;}
 });
 ["guestName","bringing"].forEach(id=>$(id).addEventListener("input",()=>$(id).setCustomValidity("")));
 $("newButton").addEventListener("click",reset);
-$("copyLink").addEventListener("click",async()=>{try{await navigator.clipboard.writeText($("editLink").value);$("saveStatus").textContent="Private edit link copied.";}catch(e){$("editLink").focus();$("editLink").select();$("saveStatus").textContent="Select and copy your edit link."; }});
 window.addEventListener("hashchange",route);render();route();load();
 setInterval(()=>{if(!document.hidden)load();},30000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)load();});
