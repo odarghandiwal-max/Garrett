@@ -110,6 +110,13 @@ footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);color:v
 .menu-group{margin:24px 0}.menu-group h3{font-size:.9rem;letter-spacing:.15em;text-transform:uppercase}
 .menu-item{display:flex;justify-content:space-between;align-items:center;gap:16px;border-top:1px solid var(--line);padding:12px 0}.menu-item small{display:block;color:var(--muted);font-style:italic}.menu-item button{flex-shrink:0}
 #menu{margin-top:40px}#drinkPrefs{margin-top:30px}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+.map-links{gap:28px}
+.map-links a{display:inline-flex;align-items:center;gap:8px;border:0;padding:4px 0;font-size:1rem;color:var(--accent)}
+.map-pin{display:block;width:25px;height:32px;flex-shrink:0;transition:transform .15s ease}
+.map-links a:hover .map-pin{transform:translateY(-2px)}
+.map-links a:hover span{text-decoration:underline;text-underline-offset:4px}
+@media(prefers-reduced-motion:reduce){.map-pin{transition:none}}
 </style>
 </head>
 <body>
