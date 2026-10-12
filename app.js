@@ -74,6 +74,7 @@ function renderAvailable(){
   if(wasChecked){input.checked=false;wasChecked=false;$("bringing").value="";$("bringing").setCustomValidity("");$("bringing").required=false;$("customField").hidden=true;$("course").value="side";}
  };
  input.onchange=()=>{
+ if(!input.checked)return;
  const custom=input.value==="custom";$("customField").hidden=!custom;
  if(custom){$("bringing").value="";$("course").value="other";$("bringing").required=true;$("bringing").focus();}
  else if(input.value==="myself"){$("bringing").value="Just bringing myself";$("course").value="other";$("bringing").required=false;}else{const [mi,di]=input.value.split(":").map(Number);$("bringing").value=MENU[mi][2][di];$("course").value=MENU[mi][1];$("bringing").required=false;}
