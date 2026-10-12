@@ -19,7 +19,7 @@ const blankForm='<h2 class="label" id="add-h">Choose something to bring</h2><p c
 '<form id="signupForm"><fieldset class="available-items"><legend class="sr-only">Available items</legend><div id="menuRows"></div><label class="item-option own-option"><input type="radio" name="item" value="custom" required><span>Bring my own</span></label></fieldset>'+
 '<div class="grid"><div class="field wide" id="customField" hidden><label for="bringing">What are you bringing?</label><input id="bringing" type="text" maxlength="160" placeholder="Type your dish, drink or item"></div>'+
 '<div class="field wide"><label for="guestName">Your name</label><input id="guestName" type="text" autocomplete="name" list="guestNames" maxlength="60" required placeholder="Your name"><datalist id="guestNames">'+names.map(n=>'<option value="'+esc(n)+'"></option>').join("")+'</datalist></div></div>'+
-'<input id="course" type="hidden" value="side"><input id="note" type="hidden" value="">'+
+'<input id="course" type="hidden" value="side">'+
 '<details class="drink-details"><summary>Drink preference (optional)</summary><label for="drinkPreference" class="sr-only">What do you like to drink?</label><input id="drinkPreference" type="text" maxlength="160" placeholder="For example: sparkling water or Pinot Noir"><p class="field-help">Tell us what you like; you do not have to bring it.</p></details>'+
 '<div class="row"><button class="primary" id="saveButton" type="submit" disabled>Submit</button><button class="text-button" id="newButton" type="button" hidden>Add another item</button><span class="status" id="saveStatus" role="status" aria-live="polite"></span></div></form>'+
 '<div id="savedLink" hidden><p class="after">Keep this private link to edit your entry on another device.</p><div class="row"><input id="editLink" type="text" readonly aria-label="Your private edit link"><button id="copyLink" class="text-button" type="button">Copy edit link</button></div></div>';
@@ -37,7 +37,7 @@ function render(){
  $("plCount").textContent=entries.length?entries.length+" guest "+(entries.length===1?"item":"items")+" signed up · ham and turkey are covered":"Ham and turkey are covered. Pick a side, appetizer, dessert or drink below.";
  $("plBoard").innerHTML=KINDS.map(k=>{
  const items=all.filter(g=>g.kind===k[0]);
- return '<section class="kind"><h3>'+k[1]+' <span class="n">'+items.length+'</span></h3><ul class="dishes">'+(items.length?items.map(g=>'<li><span class="dish">'+esc(g.bringing)+'</span><span class="by">'+esc(g.name)+'</span>'+(g.note?'<span class="note">'+esc(g.note)+'</span>':"")+(g.id&&owned[g.id]?'<button type="button" class="text-button edit-entry" data-id="'+esc(g.id)+'">Edit my item</button>':"")+'</li>').join(""):'<li class="none">Open for sign-ups</li>')+'</ul></section>';
+ return '<section class="kind"><h3>'+k[1]+' <span class="n">'+items.length+'</span></h3><ul class="dishes">'+(items.length?items.map(g=>'<li><span class="dish">'+esc(g.bringing)+'</span><span class="by">'+esc(g.name)+'</span>'+(g.id&&owned[g.id]?'<button type="button" class="text-button edit-entry" data-id="'+esc(g.id)+'">Edit my item</button>':"")+'</li>').join(""):'<li class="none">Open for sign-ups</li>')+'</ul></section>';
  }).join("");
  renderAvailable();
  $("plBoard").querySelectorAll(".edit-entry").forEach(b=>b.addEventListener("click",()=>edit(b.dataset.id)));
@@ -63,7 +63,7 @@ function reset(){currentId=null;currentToken=null;$("signupForm").reset();$("cou
 function edit(id){
  const e=entries.find(e=>e.id===id);if(!e||!owned[id])return;
  currentId=id;currentToken=owned[id];renderAvailable();
- $("guestName").value=e.name;$("bringing").value=e.bringing;$("course").value=e.kind;$("note").value=e.note;$("drinkPreference").value=e.drink_preference;$("saveButton").textContent="Save changes";$("newButton").hidden=false;$("saveStatus").textContent="";setEditLink();
+ $("guestName").value=e.name;$("bringing").value=e.bringing;$("course").value=e.kind;$("drinkPreference").value=e.drink_preference;$("saveButton").textContent="Save changes";$("newButton").hidden=false;$("saveStatus").textContent="";setEditLink();
  const choice=Array.from(document.querySelectorAll('input[name="item"]')).find(input=>{if(input.value==="custom")return false;const [mi,di]=input.value.split(":").map(Number);return MENU[mi][2][di]===e.bringing;});
  if(choice){choice.checked=true;$("customField").hidden=true;}else{document.querySelector('input[name="item"][value="custom"]').checked=true;$("customField").hidden=false;}
  showForm();
@@ -97,7 +97,7 @@ $("signupForm").addEventListener("submit",async ev=>{
  const id=currentId||crypto.randomUUID(),token=currentToken||Array.from(crypto.getRandomValues(new Uint8Array(32)),b=>b.toString(16).padStart(2,"0")).join("");
  saving=true;$("saveButton").disabled=true;$("saveStatus").textContent="Saving…";
  try{
- const data=await api("rpc/garrett_save_signup","POST",{p_id:id,p_token:token,p_name:clean("guestName"),p_bringing:clean("bringing"),p_kind:$("course").value,p_note:clean("note"),p_drink_preference:clean("drinkPreference")});
+ const data=await api("rpc/garrett_save_signup","POST",{p_id:id,p_token:token,p_name:clean("guestName"),p_bringing:clean("bringing"),p_kind:$("course").value,p_note:entries.find(e=>e.id===currentId)?.note||"",p_drink_preference:clean("drinkPreference")});
  const row=Array.isArray(data)?data[0]:data;if(!row||row.id!==id)throw Error("SAVE_NOT_CONFIRMED");
  currentId=id;currentToken=token;remember(id,token);entries=entries.filter(e=>e.id!==id).concat(row);render();setEditLink();$("saveStatus").textContent="Saved! You’re on the list.";$("saveButton").textContent="Save changes";$("newButton").hidden=false;
  }catch(e){currentId=id;currentToken=token;remember(id,token);$("saveStatus").textContent="Could not confirm the save. Please try again; your form is still here.";}
