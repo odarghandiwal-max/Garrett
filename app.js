@@ -66,7 +66,14 @@ function renderAvailable(){
  return pending.length?'<div class="available-group"><h3>'+esc(m[0])+'</h3><div class="item-options">'+pending.map(o=>'<label class="item-option"><input type="radio" name="item" value="'+mi+':'+o.di+'" required><span>'+esc(o.dish)+'<small class="portion">'+esc(PLAN[o.dish].unit)+'</small><small class="coverage">'+Math.min(covered(o.dish),PLAN[o.dish].slots)+' of '+PLAN[o.dish].slots+' taken · '+Math.max(0,PLAN[o.dish].slots-covered(o.dish))+' available</small></span></label>').join("")+'</div></div>':"";
  }).join("")||'<p class="empty">The listed items are covered. Bring a favorite of your own.</p>';
  if(selected){const radio=Array.from(document.querySelectorAll('input[name="item"]')).find(e=>e.value===selected);if(radio)radio.checked=true;}
- document.querySelectorAll('input[name="item"]').forEach(input=>{input.onchange=()=>{
+ document.querySelectorAll('input[name="item"]').forEach(input=>{
+ let wasChecked=false;
+ input.closest("label").onpointerdown=()=>{wasChecked=input.checked;};
+ input.onkeydown=ev=>{if(ev.key===" "){wasChecked=input.checked;}};
+ input.onclick=()=>{
+  if(wasChecked){input.checked=false;wasChecked=false;$("bringing").value="";$("bringing").setCustomValidity("");$("bringing").required=false;$("customField").hidden=true;$("course").value="side";}
+ };
+ input.onchange=()=>{
  const custom=input.value==="custom";$("customField").hidden=!custom;
  if(custom){$("bringing").value="";$("course").value="other";$("bringing").required=true;$("bringing").focus();}
  else if(input.value==="myself"){$("bringing").value="Just bringing myself";$("course").value="other";$("bringing").required=false;}else{const [mi,di]=input.value.split(":").map(Number);$("bringing").value=MENU[mi][2][di];$("course").value=MENU[mi][1];$("bringing").required=false;}
