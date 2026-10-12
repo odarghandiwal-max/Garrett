@@ -2,7 +2,21 @@
 const BASE="https://hefwxmhdgkeqtyyfpwub.supabase.co/rest/v1/";
 const API_KEY="sb_publishable_VJjXv7HOU5zyT4SAQWvl7w_iFU0h5cx";
 const PARTIES=[{"label":"Sterling & Jasmine","names":["Sterling","Jasmine"],"kids":["Harlo","Atlas"]},{"label":"Tyler & Kayla","names":["Tyler","Kayla"],"kids":["Hunter"]},{"label":"Sophia & Parker","names":["Sophia","Parker"]},{"label":"Adi & Dolaf","names":["Adi","Dolaf"]},{"label":"Shauna & Paul","names":["Shauna","Paul"]},{"label":"Annabelle & Rafik","names":["Annabelle","Rafik"],"status":"maybe"},{"label":"Evan & Louise","names":["Evan","Louise"],"status":"maybe"},{"label":"HLers","names":["Sahar","Jasmine (Sahar’s)","Shay","Hilay"]},{"label":"Michelle","names":["Michelle"]},{"label":"Brad","names":["Brad"]},{"label":"Nawa","names":["Nawa"]},{"label":"Zoe","names":["Zoe"],"status":"maybe"}];
-const MENU=[["Appetizers","other",["Charcuterie board","Jalapeño cream cheese wontons","Chili-lime chips & guacamole"]],["Sides","side",["Gravy","Stuffing","Mashed potatoes","Sweet potato casserole","Mac and cheese","Green bean casserole","Dinner rolls","Extra butter","Roasted vegetables","Brussels sprouts with bacon","Corn","Cranberry sauce","Applesauce","Fall salad","Caesar salad"]],["Desserts","dessert",["Pumpkin pie","Apple pie","Pecan pie","Whipped cream","Katella Bakery cookies or desserts"]],["Drinks","drink",["White wine","Red wine","Sparkling cider (non-alcoholic)","Beer","Soda","Coffee & tea"]],["Supplies","other",["Ice"]]];
+const MENU=[["Appetizers","other",["Charcuterie board","Jalapeño cream cheese wontons"]],["Sides","side",["Gravy","Stuffing","Mashed potatoes","Sweet potato casserole","Mac & Cheese","Green Bean Casserole","Dinner rolls","Extra butter","Roasted vegetables","Brussels sprouts with bacon","Corn","Cranberry sauce","Applesauce","Fall salad","Caesar salad"]],["Desserts","dessert",["Pumpkin pie","Apple pie","Pecan pie","Whipped cream","Katella Bakery cookies or desserts"]],["Drinks","drink",["White wine","Red wine","Sparkling cider (non-alcoholic)","Beer","Soda","Coffee & tea"]],["Supplies","other",["Ice"]]];
+
+const PLAN={"Charcuterie board":{"slots":1,"unit":"1 board · serves 15–20"},"Jalapeño cream cheese wontons":{"slots":2,"unit":"25–30 wontons"},"Gravy":{"slots":1,"unit":"2 quarts"},"Stuffing":{"slots":2,"unit":"1 tray · serves 10–12"},"Mashed potatoes":{"slots":2,"unit":"1 tray · serves 12–15"},"Sweet potato casserole":{"slots":1,"unit":"1 tray · serves 12–15"},"Mac & Cheese":{"slots":2,"unit":"1 tray · serves 10–12"},"Green Bean Casserole":{"slots":2,"unit":"1 tray · serves 10–12"},"Dinner rolls":{"slots":3,"unit":"12 rolls"},"Extra butter":{"slots":1,"unit":"1 lb"},"Roasted vegetables":{"slots":1,"unit":"1 tray · serves 12–15"},"Brussels sprouts with bacon":{"slots":1,"unit":"1 tray · serves 10–12"},"Corn":{"slots":1,"unit":"1 bowl · serves 10–12"},"Cranberry sauce":{"slots":1,"unit":"3 cups"},"Applesauce":{"slots":1,"unit":"1 bowl · serves 10–12"},"Fall salad":{"slots":1,"unit":"1 large bowl · serves 12–15"},"Caesar salad":{"slots":1,"unit":"1 large bowl · serves 12–15"},"Pumpkin pie":{"slots":2,"unit":"1 pie · 8 slices"},"Apple pie":{"slots":1,"unit":"1 pie · 8 slices"},"Pecan pie":{"slots":1,"unit":"1 pie · 8 slices"},"Whipped cream":{"slots":1,"unit":"2 cans or about 4 cups"},"Katella Bakery cookies or desserts":{"slots":1,"unit":"12–18 pieces"},"White wine":{"slots":3,"unit":"1 bottle · 750 mL"},"Red wine":{"slots":3,"unit":"1 bottle · 750 mL"},"Sparkling cider (non-alcoholic)":{"slots":3,"unit":"1 bottle · 750 mL"},"Beer":{"slots":2,"unit":"1 twelve-pack"},"Soda":{"slots":2,"unit":"1 twelve-pack"},"Coffee & tea":{"slots":1,"unit":"Supplies for about 20 cups"},"Ice":{"slots":3,"unit":"1 ten-pound bag"}};
+const RESERVED=[{name:"Jasmine",bringing:"Green Bean Casserole",kind:"side",drink_preference:""}];
+function canonical(dish){
+ const key=String(dish).trim().toLowerCase();
+ if(key==="mac and cheese"||key==="mac & cheese")return "Mac & Cheese";
+ if(key==="green bean casserole")return "Green Bean Casserole";
+ return dish;
+}
+function combinedEntries(){
+ return RESERVED.filter(r=>!entries.some(e=>e.name.trim().toLowerCase()===r.name.toLowerCase()&&canonical(e.bringing)===r.bringing)).concat(entries.map(e=>({...e,bringing:canonical(e.bringing)})));
+}
+function covered(dish){return combinedEntries().filter(e=>e.id!==currentId&&canonical(e.bringing).toLowerCase()===dish.toLowerCase()).length;}
+
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const KINDS=[["main","Mains"],["side","Sides"],["dessert","Desserts"],["drink","Drinks"],["other","Appetizers & supplies"]];
@@ -15,7 +29,7 @@ $("evHead").innerHTML='<li class="event invitation-event"><h1 class="sr-only">Fr
 $("eventView").querySelector(".lede").textContent="Here is what everyone has signed up to bring. Ham and turkey are on us.";
 $("pl-h").textContent="Who’s bringing what";
 const names=PARTIES.flatMap(p=>p.names.concat(p.kids||[]));
-const blankForm='<h2 class="label" id="add-h">Choose something to bring</h2><p class="hint">Pick an available item or bring your own. Add your name and submit.</p>'+
+const blankForm='<h2 class="label" id="add-h">Choose something to bring</h2><p class="hint">Planning for about 30 people. Each sign-up covers the portion shown. Pick an item, add your name, and submit.</p>'+
 '<form id="signupForm"><fieldset class="available-items"><legend class="sr-only">Available items</legend><div id="menuRows"></div><label class="item-option own-option"><input type="radio" name="item" value="custom" required><span>Bring my own</span></label><label class="item-option own-option"><input type="radio" name="item" value="myself" required><span>Just bringing myself</span></label></fieldset>'+
 '<div class="grid"><div class="field wide" id="customField" hidden><label for="bringing">What are you bringing?</label><input id="bringing" type="text" maxlength="160" placeholder="Type your dish, drink or item"></div>'+
 '<div class="field wide"><label for="guestName">Your name</label><input id="guestName" type="text" autocomplete="name" list="guestNames" maxlength="60" required placeholder="Your name"><datalist id="guestNames">'+names.map(n=>'<option value="'+esc(n)+'"></option>').join("")+'</datalist></div></div>'+
@@ -33,11 +47,11 @@ document.querySelector('nav a[href="#past"]')?.remove();
 document.querySelector('nav a[href="#events"]').textContent="Potluck";
 function render(){
  const host=[{name:"Onay & Jordan",bringing:"Honey Baked Ham",kind:"main",note:"Provided by the hosts"},{name:"Onay & Jordan",bringing:"Turkey",kind:"main",note:"Provided by the hosts"}];
- const all=host.concat(entries);
- $("plCount").textContent=entries.length?entries.length+" guest "+(entries.length===1?"item":"items")+" signed up · ham and turkey are covered":"Ham and turkey are covered. Pick a side, appetizer, dessert or drink below.";
+ const all=host.concat(combinedEntries());
+ $("plCount").textContent=combinedEntries().length?combinedEntries().length+" guest "+(combinedEntries().length===1?"item":"items")+" signed up · ham and turkey are covered":"Ham and turkey are covered. Pick a side, appetizer, dessert or drink below.";
  $("plBoard").innerHTML=KINDS.map(k=>{
  const items=all.filter(g=>g.kind===k[0]);
- return '<section class="kind"><h3>'+k[1]+' <span class="n">'+items.length+'</span></h3><ul class="dishes">'+(items.length?items.map(g=>'<li><span class="dish">'+esc(g.bringing)+'</span><span class="by">'+esc(g.name)+'</span>'+(g.id&&owned[g.id]?'<button type="button" class="text-button edit-entry" data-id="'+esc(g.id)+'">Edit my item</button>':"")+'</li>').join(""):'<li class="none">Open for sign-ups</li>')+'</ul></section>';
+ return '<section class="kind"><h3>'+k[1]+' <span class="n">'+items.length+'</span></h3><ul class="dishes">'+(items.length?items.map(g=>'<li><span class="dish">'+esc(g.bringing)+'</span>'+(PLAN[g.bringing]?'<span class="portion">'+esc(PLAN[g.bringing].unit)+'</span>':"")+'<span class="by">'+esc(g.name)+'</span>'+(g.id&&owned[g.id]?'<button type="button" class="text-button edit-entry" data-id="'+esc(g.id)+'">Edit my item</button>':"")+'</li>').join(""):'<li class="none">Open for sign-ups</li>')+'</ul></section>';
  }).join("");
  renderAvailable();
  $("plBoard").querySelectorAll(".edit-entry").forEach(b=>b.addEventListener("click",()=>edit(b.dataset.id)));
@@ -48,8 +62,8 @@ function render(){
 function renderAvailable(){
  const selected=document.querySelector('input[name="item"]:checked')?.value;
  $("menuRows").innerHTML=MENU.map((m,mi)=>{
- const pending=m[2].map((dish,di)=>({dish,di})).filter(o=>!entries.some(e=>e.id!==currentId&&e.bringing.toLowerCase()===o.dish.toLowerCase()));
- return pending.length?'<div class="available-group"><h3>'+esc(m[0])+'</h3><div class="item-options">'+pending.map(o=>'<label class="item-option"><input type="radio" name="item" value="'+mi+':'+o.di+'" required><span>'+esc(o.dish)+'</span></label>').join("")+'</div></div>':"";
+ const pending=m[2].map((dish,di)=>({dish,di})).filter(o=>covered(o.dish)<PLAN[o.dish].slots);
+ return pending.length?'<div class="available-group"><h3>'+esc(m[0])+'</h3><div class="item-options">'+pending.map(o=>'<label class="item-option"><input type="radio" name="item" value="'+mi+':'+o.di+'" required><span>'+esc(o.dish)+'<small class="portion">'+esc(PLAN[o.dish].unit)+'</small><small class="coverage">'+Math.min(covered(o.dish),PLAN[o.dish].slots)+' of '+PLAN[o.dish].slots+' taken · '+Math.max(0,PLAN[o.dish].slots-covered(o.dish))+' available</small></span></label>').join("")+'</div></div>':"";
  }).join("")||'<p class="empty">The listed items are covered. Bring a favorite of your own.</p>';
  if(selected){const radio=Array.from(document.querySelectorAll('input[name="item"]')).find(e=>e.value===selected);if(radio)radio.checked=true;}
  document.querySelectorAll('input[name="item"]').forEach(input=>{input.onchange=()=>{
