@@ -1,101 +1,102 @@
 "use strict";
-const SUPABASE_URL="https://hefwxmhdgkeqtyyfpwub.supabase.co";
-const PUBLIC_KEY="sb_publishable_VJjXv7HOU5zyT4SAQWvl7w_iFU0h5cx";
-const PARTIES=[{"label":"Onay & Jordan","names":["Onay","Jordan"],"status":"yes","hosts":true},{"label":"Sterling & Jasmine","names":["Sterling","Jasmine"],"kids":["Harlo","Atlas"]},{"label":"Tyler & Kayla","names":["Tyler","Kayla"],"kids":["Hunter"]},{"label":"Sophia & Parker","names":["Sophia","Parker"]},{"label":"Adi & Dolaf","names":["Adi","Dolaf"]},{"label":"Shauna & Paul","names":["Shauna","Paul"]},{"label":"Annabelle & Rafik","names":["Annabelle","Rafik"],"status":"maybe"},{"label":"Evan & Louise","names":["Evan","Louise"],"status":"maybe"},{"label":"HLers","names":["Sahar","Jasmine (Sahar’s)","Shay","Hilay"]},{"label":"Michelle","names":["Michelle"]},{"label":"Brad","names":["Brad"]},{"label":"Shabnam","names":["Shabnam"]},{"label":"Nawa","names":["Nawa"]},{"label":"Zoe","names":["Zoe"],"status":"maybe"}];
-const INITIAL_GUESTS=[{"id":"p1-g1","name":"Onay","party_id":"p1","child":false,"rsvp":"yes","bringing":"","kind":"side","note":"","drink_preference":""},{"id":"p1-g2","name":"Jordan","party_id":"p1","child":false,"rsvp":"yes","bringing":"","kind":"side","note":"","drink_preference":""},{"id":"p2-g1","name":"Sterling","party_id":"p2","child":false,"rsvp":"pending","bringing":"","kind":"side","note":"","drink_preference":""},{"id":"p2-g2","name":"Jasmine","party_id":"p2","child":false,"rsvp":"pending","bringing":"","kind":"side","note":"","drink_preference":""},{"id":"p2-g3","name":"Harlo","party_id":"p2","child":true,"rsvp":"pending","bringing":"","kind":"side","note":"","drink_preference":""},{"id":"p2-g4","name":"Atlas","party_id":"p2","child":true,"rsvp":"pending","bringing":"","kind":"side","note":"","drink_preference":""},{"id":"p3-g1","name":"Tyler","party_id":"p3","child":false,"rsvp":"pending","bringing":"","kind":"side","note":"","drink_preference":""},{"id":"p3-g2","name":"Kayla","party_id":"p3","child":false,"rsvp":"pending","bringing":"","kind":"side","note":"","drink_preference":""},{"id":"p3-g3","name":"Hunter","party_id":"p3","child":true,"rsvp":"pending","bringing":"","kind":"side","note":"","drink_preference":""},{"id":"p4-g1","name":"Sophia","party_id":"p4","child":false,"rsvp":"pending","bringing":"","kind":"side","note":"","drink_preference":""},{"id":"p4-g2","name":"Parker","party_id":"p4","child":false,"rsvp":"pending","bringing":"","kind":"side","note":"","drink_preference":""},{"id":"p5-g1","name":"Adi","party_id":"p5","child":false,"rsvp":"pending","bringing":"","kind":"side","note":"","drink_preference":""},{"id":"p5-g2","name":"Dolaf","party_id":"p5","child":false,"rsvp":"pending","bringing":"","kind":"side","note":"","drink_preference":""},{"id":"p6-g1","name":"Shauna","party_id":"p6","child":false,"rsvp":"pending","bringing":"","kind":"side","note":"","drink_preference":""},{"id":"p6-g2","name":"Paul","party_id":"p6","child":false,"rsvp":"pending","bringing":"","kind":"side","note":"","drink_preference":""},{"id":"p7-g1","name":"Annabelle","party_id":"p7","child":false,"rsvp":"maybe","bringing":"","kind":"side","note":"","drink_preference":""},{"id":"p7-g2","name":"Rafik","party_id":"p7","child":false,"rsvp":"maybe","bringing":"","kind":"side","note":"","drink_preference":""},{"id":"p8-g1","name":"Evan","party_id":"p8","child":false,"rsvp":"maybe","bringing":"","kind":"side","note":"","drink_preference":""},{"id":"p8-g2","name":"Louise","party_id":"p8","child":false,"rsvp":"maybe","bringing":"","kind":"side","note":"","drink_preference":""},{"id":"p9-g1","name":"Sahar","party_id":"p9","child":false,"rsvp":"pending","bringing":"","kind":"side","note":"","drink_preference":""},{"id":"p9-g2","name":"Jasmine (Sahar’s)","party_id":"p9","child":false,"rsvp":"pending","bringing":"","kind":"side","note":"","drink_preference":""},{"id":"p9-g3","name":"Shay","party_id":"p9","child":false,"rsvp":"pending","bringing":"","kind":"side","note":"","drink_preference":""},{"id":"p9-g4","name":"Hilay","party_id":"p9","child":false,"rsvp":"pending","bringing":"","kind":"side","note":"","drink_preference":""},{"id":"p10-g1","name":"Michelle","party_id":"p10","child":false,"rsvp":"pending","bringing":"","kind":"side","note":"","drink_preference":""},{"id":"p11-g1","name":"Brad","party_id":"p11","child":false,"rsvp":"pending","bringing":"","kind":"side","note":"","drink_preference":""},{"id":"p12-g1","name":"Shabnam","party_id":"p12","child":false,"rsvp":"pending","bringing":"","kind":"side","note":"","drink_preference":""},{"id":"p13-g1","name":"Nawa","party_id":"p13","child":false,"rsvp":"pending","bringing":"","kind":"side","note":"","drink_preference":""},{"id":"p14-g1","name":"Zoe","party_id":"p14","child":false,"rsvp":"maybe","bringing":"","kind":"side","note":"","drink_preference":""}];
+const BASE="https://hefwxmhdgkeqtyyfpwub.supabase.co/rest/v1/";
+const API_KEY="sb_publishable_VJjXv7HOU5zyT4SAQWvl7w_iFU0h5cx";
+const PARTIES=[{"label":"Sterling & Jasmine","names":["Sterling","Jasmine"],"kids":["Harlo","Atlas"]},{"label":"Tyler & Kayla","names":["Tyler","Kayla"],"kids":["Hunter"]},{"label":"Sophia & Parker","names":["Sophia","Parker"]},{"label":"Adi & Dolaf","names":["Adi","Dolaf"]},{"label":"Shauna & Paul","names":["Shauna","Paul"]},{"label":"Annabelle & Rafik","names":["Annabelle","Rafik"],"status":"maybe"},{"label":"Evan & Louise","names":["Evan","Louise"],"status":"maybe"},{"label":"HLers","names":["Sahar","Jasmine (Sahar’s)","Shay","Hilay"]},{"label":"Michelle","names":["Michelle"]},{"label":"Brad","names":["Brad"]},{"label":"Nawa","names":["Nawa"]},{"label":"Zoe","names":["Zoe"],"status":"maybe"}];
 const MENU=[["Appetizers","other",["Charcuterie board","Jalapeño cream cheese wontons","Chili-lime chips & guacamole"]],["Sides","side",["Gravy","Stuffing","Mashed potatoes","Sweet potato casserole","Mac and cheese","Green bean casserole","Dinner rolls","Extra butter","Roasted vegetables","Brussels sprouts with bacon","Corn","Cranberry sauce","Applesauce","Fall salad","Caesar salad"]],["Desserts","dessert",["Pumpkin pie","Apple pie","Pecan pie","Whipped cream","Katella Bakery cookies or desserts"]],["Drinks","drink",["White wine","Red wine","Sparkling cider (non-alcoholic)","Beer","Soda","Coffee & tea"]],["Supplies","other",["Ice"]]];
-let guests=INITIAL_GUESTS.map(g=>({...g})),ready=false,loading=false;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const statusLabel=s=>({yes:"Coming",maybe:"Maybe",no:"Unable to attend",pending:"Invited"})[s]||"Invited";
-const kinds=[["main","Mains"],["side","Sides"],["dessert","Desserts"],["drink","Drinks"],["other","Appetizers & supplies"]];
-const notice=document.createElement("p");notice.className="save-notice";notice.role="status";notice.setAttribute("aria-live","polite");$("eventView").append(notice);
-$("evHead").innerHTML='<li class="event"><div><p class="eyebrow">You’re invited to</p><h3>Friendsgiving</h3><span class="short"></span><p class="meta"><span>Saturday, November 21, 2026</span><span>2:00 PM PST</span></p><p class="desc">Bring your favorite dish or drink.</p></div></li>';
-$("eventView").querySelector(".lede").textContent="Choose from the menu or bring a favorite of your own. See what everyone has signed up for below.";
-const options=()=>guests.map(g=>'<option value="'+esc(g.id)+'">'+esc(g.name)+'</option>').join("");
-$("eventView").querySelector(".compose").innerHTML=
-'<h2 class="label" id="add-h">What are you bringing?</h2><p class="hint">Find your name, pick from the list, or tell us your own idea. You can change your entry later.</p>'+
-'<form id="signupForm"><div class="grid">'+
-'<div class="field"><label for="guestChoice">Your name</label><select id="guestChoice" required><option value="">Choose your name</option>'+options()+'</select></div>'+
-'<div class="field"><label for="dishChoice">Choose an item</label><select id="dishChoice"><option value="">Pick from the menu</option>'+MENU.map((m,mi)=>'<optgroup label="'+esc(m[0])+'">'+m[2].map((v,vi)=>'<option value="'+mi+":"+vi+'">'+esc(v)+'</option>').join("")+'</optgroup>').join("")+'<option value="custom">Something else — type it below</option></select></div>'+
-'<div class="field wide"><label for="bringing">Your dish, drink or item</label><input id="bringing" type="text" maxlength="160" placeholder="Choose above or type your own. Bringing more? List it here."></div>'+
-'<div class="field"><label for="course">Category</label><select id="course">'+kinds.map(k=>'<option value="'+k[0]+'">'+k[1]+'</option>').join("")+'</select></div>'+
-'<div class="field"><label for="dishNote">Serving note (optional)</label><input id="dishNote" type="text" maxlength="160" placeholder="For example: serves 8"></div>'+
-'<div class="field wide"><label for="drinkPreference">What do you like to drink? (optional)</label><input id="drinkPreference" type="text" maxlength="160" placeholder="For example: sparkling water, Pinot Noir, IPA or Diet Coke"><p class="field-help">This is your preference; it does not sign you up to bring it.</p></div>'+
-'</div><div class="row"><button id="signupSave" class="primary" type="submit" disabled>Save my choices</button><span id="signupStatus" class="status" role="status" aria-live="polite"></span></div></form>'+
-'<p class="after">This is a shared board. Choose your own name when updating. Entries and drink preferences are visible to guests.</p>';
-$("guestsView").querySelector(".intro p").textContent="Everyone coming together, together on the list. Select your name below to update your RSVP.";
-$("guestsView").querySelector(".compose").innerHTML=
-'<h2 class="label">Your RSVP</h2><form id="rsvpForm"><div class="grid"><div class="field"><label for="rsvpGuest">Your name</label><select id="rsvpGuest" required><option value="">Choose your name</option>'+options()+'</select></div><div class="field"><label for="rsvpValue">Will you join us?</label><select id="rsvpValue"><option value="pending">Not answered yet</option><option value="yes">Yes, I’m coming</option><option value="maybe">Maybe</option><option value="no">Unable to attend</option></select></div></div><div class="row"><button id="rsvpSave" type="submit" class="primary" disabled>Save RSVP</button><span class="status" id="rsvpStatus" role="status" aria-live="polite"></span></div></form>';
-$("lgList").innerHTML='<section class="lg"><h3>Friendsgiving</h3><dl class="facts"><div class="fact"><dt>When</dt><dd>Saturday, November 21, 2026 at 2:00 PM PST</dd></div><div class="fact"><dt>Mains</dt><dd>Onay & Jordan are providing Honey Baked Ham and turkey.</dd></div><div class="fact"><dt>Food</dt><dd>Pick a side, appetizer, dessert, drink or supply from the menu, or bring your own favorite.</dd></div></dl></section>';
+const KINDS=[["main","Mains"],["side","Sides"],["dessert","Desserts"],["drink","Drinks"],["other","Appetizers & supplies"]];
+let entries=[],ready=false,currentId=null,currentToken=null,loading=false,saving=false;
+let owned={};
+try{owned=JSON.parse(localStorage.getItem("garrett-owned")||"{}");}catch(e){}
+function remember(id,token){owned[id]=token;try{localStorage.setItem("garrett-owned",JSON.stringify(owned));}catch(e){}}
+const maps='<div class="map-links"><a href="https://www.google.com/maps/search/?api=1&query=158%20Santa%20Ana%20Ave%2C%20Long%20Beach%2C%20CA" target="_blank" rel="noopener noreferrer">Google Maps ↗</a><a href="https://maps.apple.com/?q=158%20Santa%20Ana%20Ave%2C%20Long%20Beach%2C%20CA" target="_blank" rel="noopener noreferrer">Apple Maps ↗</a></div>';
+$("evHead").innerHTML='<li class="event invitation-event"><h1 class="sr-only">Friendsgiving</h1><img class="invitation-image" src="assets/friendsgiving-invitation.jpg" width="1206" height="1761" alt="You’re invited to Friendsgiving at The Garretts, Saturday November 21, 2026 at 2:00 PM. 158 Santa Ana Ave, Long Beach, CA 90803. Bring your favorite dish or drink.">'+maps+'</li>';
+$("eventView").querySelector(".lede").textContent="Pick something below or bring a favorite of your own. Ham and turkey are on us.";
+$("pl-h").textContent="What to bring";
+const names=PARTIES.flatMap(p=>p.names.concat(p.kids||[]));
+const blankForm='<h2 class="label" id="add-h">Add your name</h2><p class="hint">Pick from the list or type your own idea. You can edit your entry after saving.</p>'+
+'<form id="signupForm"><div class="grid"><div class="field"><label for="guestName">Your name</label><input id="guestName" type="text" autocomplete="name" list="guestNames" maxlength="60" required placeholder="Your name"><datalist id="guestNames">'+names.map(n=>'<option value="'+esc(n)+'"></option>').join("")+'</datalist></div>'+
+'<div class="field"><label for="bringing">What are you bringing?</label><input id="bringing" type="text" maxlength="160" required placeholder="Pick above or type your own"></div>'+
+'<div class="field"><label for="course">Category</label><select id="course">'+KINDS.map(k=>'<option value="'+k[0]+'">'+k[1]+'</option>').join("")+'</select></div>'+
+'<div class="field"><label for="note">Note (optional)</label><input id="note" type="text" maxlength="160" placeholder="For example: serves 8"></div>'+
+'<div class="field wide"><label for="drinkPreference">What do you like to drink? (optional)</label><input id="drinkPreference" type="text" maxlength="160" list="drinkIdeas" placeholder="For example: sparkling water, Pinot Noir, IPA or Diet Coke"><datalist id="drinkIdeas"><option value="Water"><option value="Sparkling water"><option value="White wine"><option value="Red wine"><option value="Sparkling cider"><option value="Beer"><option value="Soda"><option value="Coffee"><option value="Tea"></datalist><p class="field-help">A preference does not sign you up to bring it.</p></div>'+
+'</div><div class="row"><button class="primary" id="saveButton" type="submit" disabled>Save my item</button><button class="text-button" id="newButton" type="button" hidden>Add another item</button><span class="status" id="saveStatus" role="status" aria-live="polite"></span></div></form>'+
+'<div id="savedLink" hidden><p class="after">To edit on another device, keep this private link. It lets you edit only this entry.</p><div class="row"><input id="editLink" type="text" readonly aria-label="Your private edit link"><button id="copyLink" class="text-button" type="button">Copy edit link</button></div></div><p class="after">Names, items and drink preferences appear on the shared board.</p>';
+$("eventView").querySelector(".compose").innerHTML=blankForm;
+const menu=document.createElement("section");menu.id="menu";menu.innerHTML='<h2 class="label">Pick something to bring</h2><p class="lede">Choose an item below, or <a href="#signup" id="ownIdea">bring something else</a>.</p><div id="menuRows"></div>';$("eventView").querySelector(".compose").before(menu);
+$("guestsView").querySelector(".compose").remove();
+$("guestsView").querySelector(".intro p").textContent="Good company, all together. Families and friends are grouped together below.";
+$("lgList").innerHTML='<section class="lg"><h3>Friendsgiving</h3><dl class="facts"><div class="fact"><dt>When</dt><dd>Saturday, November 21, 2026 at 2:00 PM PST</dd></div><div class="fact"><dt>Where</dt><dd>158 Santa Ana Ave, Long Beach, CA'+maps+'</dd></div><div class="fact"><dt>Mains</dt><dd>Onay & Jordan are providing Honey Baked Ham and turkey.</dd></div><div class="fact"><dt>Food</dt><dd>Pick a side, appetizer, dessert, drink or supply from the menu, or bring your own favorite.</dd></div></dl></section>';
+$("gsList").innerHTML='<p class="count">'+names.length+' invited guests · plus Onay & Jordan hosting</p>'+PARTIES.map(p=>'<section class="guest-party"><h2>'+esc(p.label)+'</h2>'+(p.kids?.length?'<p>With '+esc(p.kids.join(" & "))+'</p>':p.label==="HLers"?'<p>'+esc(p.names.join(", "))+'</p>':"")+(p.status==="maybe"?'<span class="guest-status">Maybe</span>':"")+'</section>').join("");
+document.querySelector('nav a[href="#past"]')?.remove();
+document.querySelector('nav a[href="#events"]').textContent="Potluck";
 function render(){
- const entries=[{name:"Onay & Jordan",bringing:"Honey Baked Ham",kind:"main",note:"Provided by the hosts"},{name:"Onay & Jordan",bringing:"Turkey",kind:"main",note:"Provided by the hosts"},...guests.filter(g=>g.bringing)];
- $("plCount").textContent=entries.length+" items on the board · ham and turkey are covered";
- $("plBoard").innerHTML=kinds.map(k=>{
- const items=entries.filter(g=>g.kind===k[0]);
- return '<section class="kind"><h3>'+k[1]+' <span class="n">'+items.length+'</span></h3><ul class="dishes">'+(items.length?items.map(g=>'<li><span class="dish">'+esc(g.bringing)+'</span><span class="by">'+esc(g.name)+'</span>'+(g.note?'<span class="note">'+esc(g.note)+'</span>':"")+'</li>').join(""):'<li class="none">Open for sign-ups</li>')+'</ul></section>';
+ const host=[{name:"Onay & Jordan",bringing:"Honey Baked Ham",kind:"main",note:"Provided by the hosts"},{name:"Onay & Jordan",bringing:"Turkey",kind:"main",note:"Provided by the hosts"}];
+ const all=host.concat(entries);
+ $("plCount").textContent=entries.length?entries.length+" guest "+(entries.length===1?"item":"items")+" signed up · ham and turkey are covered":"Ham and turkey are covered. Pick a side, appetizer, dessert or drink below.";
+ $("plBoard").innerHTML=KINDS.map(k=>{
+ const items=all.filter(g=>g.kind===k[0]);
+ return '<section class="kind"><h3>'+k[1]+' <span class="n">'+items.length+'</span></h3><ul class="dishes">'+(items.length?items.map(g=>'<li><span class="dish">'+esc(g.bringing)+'</span><span class="by">'+esc(g.name)+'</span>'+(g.note?'<span class="note">'+esc(g.note)+'</span>':"")+(g.id&&owned[g.id]?'<button type="button" class="text-button edit-entry" data-id="'+esc(g.id)+'">Edit my item</button>':"")+'</li>').join(""):'<li class="none">Open for sign-ups</li>')+'</ul></section>';
  }).join("");
- $("gsList").innerHTML='<p class="count">'+guests.length+' on the list · '+guests.filter(g=>g.rsvp==="yes").length+' coming · '+guests.filter(g=>g.rsvp==="maybe").length+' maybe</p>'+PARTIES.map((p,pi)=>{
- const members=guests.filter(g=>g.party_id==="p"+(pi+1));
- return '<section class="guest-party"><h2>'+esc(p.label)+'</h2>'+(p.kids?.length?'<p>With '+esc(p.kids.join(" & "))+'</p>':"")+'<ul class="party-members">'+members.map(g=>'<li><span>'+esc(g.name)+'</span><span class="guest-status">'+esc(p.hosts?"Hosting":statusLabel(g.rsvp))+'</span>'+(g.drink_preference?'<small>Drink preference: '+esc(g.drink_preference)+'</small>':"")+'</li>').join("")+'</ul></section>';
- }).join("");
+ $("menuRows").innerHTML=MENU.map((m,mi)=>'<section class="menu-group"><h3>'+m[0]+'</h3>'+m[2].map((dish,di)=>{
+ const claims=entries.filter(g=>g.bringing.toLowerCase()===dish.toLowerCase());
+ return '<div class="menu-item"><div><strong>'+esc(dish)+'</strong>'+(claims.length?'<small>'+claims.map(g=>esc(g.name)).join(", ")+' signed up</small>':"")+'</div><button class="text-button choose-item" type="button" data-item="'+mi+":"+di+'">'+(claims.length?"Bring more":"Bring this")+'</button></div>';
+ }).join("")+'</section>').join("");
+ $("menuRows").querySelectorAll(".choose-item").forEach(b=>b.addEventListener("click",()=>{
+ const [mi,di]=b.dataset.item.split(":").map(Number);reset();$("bringing").value=MENU[mi][2][di];$("course").value=MENU[mi][1];showForm();
+ }));
+ $("plBoard").querySelectorAll(".edit-entry").forEach(b=>b.addEventListener("click",()=>edit(b.dataset.id)));
+ const prefs=entries.filter(g=>g.drink_preference);
+ let prefEl=$("drinkPrefs");if(!prefEl){prefEl=document.createElement("section");prefEl.id="drinkPrefs";$("plBoard").after(prefEl);}
+ prefEl.innerHTML=prefs.length?'<h2 class="label">Drink preferences</h2><ul class="dishes">'+prefs.map(g=>'<li><span class="dish">'+esc(g.name)+'</span><span class="by">'+esc(g.drink_preference)+'</span></li>').join("")+'</ul>':"";
 }
+function showForm(){$("eventView").hidden=false;$("guestsView").hidden=true;$("logisticsView").hidden=true;$("signupForm").scrollIntoView({behavior:"smooth",block:"start"});$("guestName").focus();}
+function reset(){currentId=null;currentToken=null;$("signupForm").reset();$("course").value="side";$("saveButton").textContent="Save my item";$("newButton").hidden=true;$("saveStatus").textContent="";$("savedLink").hidden=true;}
+function edit(id){
+ const e=entries.find(e=>e.id===id);if(!e||!owned[id])return;
+ currentId=id;currentToken=owned[id];
+ $("guestName").value=e.name;$("bringing").value=e.bringing;$("course").value=e.kind;$("note").value=e.note;$("drinkPreference").value=e.drink_preference;$("saveButton").textContent="Save changes";$("newButton").hidden=false;$("saveStatus").textContent="";setEditLink();showForm();
+}
+function setEditLink(){const u=new URL(location.href);u.hash="friendsgiving?entry="+encodeURIComponent(currentId)+"&edit="+encodeURIComponent(currentToken);$("editLink").value=u.href;$("savedLink").hidden=false;}
 function route(){
- const h=location.hash.slice(1)||"friendsgiving";
+ const h=location.hash.slice(1).split("?")[0]||"friendsgiving";
  ["home","eventView","guestsView","logisticsView"].forEach(id=>$(id).hidden=true);
  $(h==="guests"?"guestsView":h==="logistics"?"logisticsView":"eventView").hidden=false;
- document.querySelectorAll("nav a").forEach(a=>a.toggleAttribute("aria-current",a.getAttribute("href")===(h==="guests"?"#guests":h==="logistics"?"#logistics":"#events")));
+ document.querySelectorAll("nav a").forEach(a=>{const selected=a.getAttribute("href")===(h==="guests"?"#guests":h==="logistics"?"#logistics":"#events");if(selected)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current");});
  document.title=(h==="guests"?"Guests":h==="logistics"?"The details":"Friendsgiving")+" | The Garretts";
- window.scrollTo(0,0);
+ if(h==="signup")showForm();else window.scrollTo(0,0);
 }
 async function api(path,method="GET",body){
- const response=await fetch(SUPABASE_URL+"/rest/v1/"+path,{method,headers:{apikey:PUBLIC_KEY,"Content-Type":"application/json",Prefer:"return=representation"},body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(12000)});
- const data=await response.json();
- if(!response.ok)throw new Error(data.code||"HTTP "+response.status);
- return data;
+ const r=await fetch(BASE+path,{method,headers:{apikey:API_KEY,"Content-Type":"application/json"},body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(12000)});
+ const data=await r.json();if(!r.ok)throw Error(data.code||"SAVE_FAILED");return data;
 }
 async function load(){
- if(loading)return;loading=true;
- try{
- const data=await api("garrett_guests?select=*&order=id");
- if(!Array.isArray(data)||!data.length)throw Error("NOT_CONFIGURED");
- guests=data;ready=true;notice.textContent="Changes save to the shared guest list.";render();
- }catch(e){ready=false;notice.textContent="Sign-up saving is not available yet. Please check back soon. Your entries have not been saved.";}
- finally{loading=false;$("signupSave").disabled=!ready;$("rsvpSave").disabled=!ready;}
+ if(loading||saving)return;loading=true;
+ try{const data=await api("garrett_signups?select=*&order=created_at");if(!Array.isArray(data))throw Error("INVALID_DATA");entries=data;ready=true;render();
+ const p=new URLSearchParams(location.hash.split("?")[1]||"");
+ const id=p.get("entry"),token=p.get("edit");if(id&&token&&token.length>=32&&entries.some(e=>e.id===id)){remember(id,token);edit(id);history.replaceState(null,"","#friendsgiving");}
+ }catch(e){ready=false;$("saveStatus").textContent="Saving is not available yet. Please check back soon.";}
+ finally{loading=false;$("saveButton").disabled=!ready||saving;}
 }
-$("guestChoice").addEventListener("change",()=>{
- const g=guests.find(g=>g.id===$("guestChoice").value);
- $("bringing").value=g?.bringing||"";$("course").value=g?.kind||"side";$("dishNote").value=g?.note||"";$("drinkPreference").value=g?.drink_preference||"";$("dishChoice").value="";$("signupStatus").textContent="";
-});
-$("dishChoice").addEventListener("change",()=>{
- const value=$("dishChoice").value;
- if(value==="custom"){$("bringing").value="";$("bringing").focus();return;}
- if(!value)return;
- const [mi,vi]=value.split(":").map(Number);$("bringing").value=MENU[mi][2][vi];$("course").value=MENU[mi][1];
-});
-$("rsvpGuest").addEventListener("change",()=>{$("rsvpValue").value=guests.find(g=>g.id===$("rsvpGuest").value)?.rsvp||"pending";$("rsvpStatus").textContent="";});
-async function save(id,changes,status,button){
- if(!ready){status.textContent="Saving is not available yet. Nothing was saved.";return;}
- const g=guests.find(g=>g.id===id);if(!g)return;
- button.disabled=true;status.textContent="Saving…";
- try{
- const data=await api("garrett_guests?id=eq."+encodeURIComponent(id),"PATCH",changes);
- if(!Array.isArray(data)||data.length!==1)throw Error("SAVE_NOT_CONFIRMED");
- guests=guests.map(old=>old.id===id?data[0]:old);render();status.textContent="Saved. You can come back to change it.";
- }catch(e){status.textContent="Could not save. Your entry has not been saved; please try again.";}
- finally{button.disabled=!ready;}
-}
-$("signupForm").addEventListener("submit",async e=>{
- e.preventDefault();if(!e.target.reportValidity())return;
+$("signupForm").addEventListener("submit",async ev=>{
+ ev.preventDefault();if(!ready||saving)return;
  const clean=id=>$(id).value.trim().replace(/\s+/g," ");
- await save($("guestChoice").value,{bringing:clean("bringing"),kind:$("course").value,note:clean("dishNote"),drink_preference:clean("drinkPreference")},$("signupStatus"),$("signupSave"));
+ $("guestName").setCustomValidity(clean("guestName")?"":"Enter your name.");$("bringing").setCustomValidity(clean("bringing")?"":"Enter what you are bringing.");
+ if(!ev.target.reportValidity())return;
+ const id=currentId||crypto.randomUUID(),token=currentToken||Array.from(crypto.getRandomValues(new Uint8Array(32)),b=>b.toString(16).padStart(2,"0")).join("");
+ saving=true;$("saveButton").disabled=true;$("saveStatus").textContent="Saving…";
+ try{
+ const data=await api("rpc/garrett_save_signup","POST",{p_id:id,p_token:token,p_name:clean("guestName"),p_bringing:clean("bringing"),p_kind:$("course").value,p_note:clean("note"),p_drink_preference:clean("drinkPreference")});
+ const row=Array.isArray(data)?data[0]:data;if(!row||row.id!==id)throw Error("SAVE_NOT_CONFIRMED");
+ currentId=id;currentToken=token;remember(id,token);entries=entries.filter(e=>e.id!==id).concat(row);render();setEditLink();$("saveStatus").textContent="Saved! You’re on the list.";$("saveButton").textContent="Save changes";$("newButton").hidden=false;
+ }catch(e){currentId=id;currentToken=token;remember(id,token);$("saveStatus").textContent="Could not confirm the save. Please try again; your form is still here.";}
+ finally{saving=false;$("saveButton").disabled=!ready;}
 });
-$("rsvpForm").addEventListener("submit",async e=>{
- e.preventDefault();if(!e.target.reportValidity())return;
- await save($("rsvpGuest").value,{rsvp:$("rsvpValue").value},$("rsvpStatus"),$("rsvpSave"));
-});
-document.querySelector('nav a[href="#past"]').remove();
-window.addEventListener("hashchange",route);
-render();route();load();
+["guestName","bringing"].forEach(id=>$(id).addEventListener("input",()=>$(id).setCustomValidity("")));
+$("newButton").addEventListener("click",reset);
+$("ownIdea").addEventListener("click",ev=>{ev.preventDefault();reset();showForm();});
+$("copyLink").addEventListener("click",async()=>{try{await navigator.clipboard.writeText($("editLink").value);$("saveStatus").textContent="Private edit link copied.";}catch(e){$("editLink").focus();$("editLink").select();$("saveStatus").textContent="Select and copy your edit link."; }});
+window.addEventListener("hashchange",route);render();route();load();
 setInterval(()=>{if(!document.hidden)load();},30000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)load();});
