@@ -84,7 +84,7 @@ footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);color:v
 <header class="mast"><div class="brand">The Garretts</div><nav aria-label="Primary"><a href="#events">Events</a><a href="#logistics" data-go="logistics">Logistics</a><a href="#guests" data-go="guests">Guests</a><a href="#past">Past events</a></nav></header>
 <noscript><p class="empty">Please enable JavaScript to view events and the potluck board.</p></noscript>
 <main id="home">
-<section class="intro"><h1>Come hang out with us.</h1><p>Here is what we are hosting and when. New events show up on this page as we plan them.</p></section>
+<section class="intro"><h1>Friendsgiving</h1><p>Bring your favorite dish or drink. See what everyone is bringing and add yours below.</p></section>
 <section id="events" aria-labelledby="up-h"><h2 class="label" id="up-h">Upcoming events</h2><ul class="events" id="upcoming"></ul></section>
 <section class="past" id="past" aria-labelledby="past-h"><h2 class="label" id="past-h">Past events</h2><ul class="events" id="pastList"></ul></section>
 </main>
@@ -165,7 +165,7 @@ function renderGuests(){
  }).join("")||'<p class="empty">No events on the calendar right now. Check back soon.</p>';
 }
 function route(){
- var h=location.hash.slice(1),e=h?findBySlug(h):null;
+ var h=location.hash.slice(1)||"friendsgiving",e=findBySlug(h);
  if(h==="logistics"||h==="guests"){
   if(h==="logistics")renderLogistics();else renderGuests();
   homeEl.hidden=true;viewEl.hidden=true;lgEl.hidden=h!=="logistics";gsEl.hidden=h!=="guests";window.scrollTo(0,0);return;
@@ -315,7 +315,7 @@ document.getElementById("gsForm").addEventListener("submit",function(ev){ev.prev
   route = function () {
     refreshLists();
     originalRoute();
-    var h = location.hash.slice(1);
+    var h = location.hash.slice(1) || "friendsgiving";
     document.querySelectorAll('nav a').forEach(function (a) {
       var key = a.getAttribute("href").slice(1);
       var selected = key === h || (key === "events" && (!h || findBySlug(h)));
