@@ -118,6 +118,18 @@ footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);color:v
 .map-links a:hover span{text-decoration:underline;text-underline-offset:4px}
 @media(prefers-reduced-motion:reduce){.map-pin{transition:none}}
 .full-menu{border-top:1px solid var(--line);padding-top:18px}.full-menu summary{cursor:pointer;color:var(--accent);font-weight:700;font-size:1.2rem;min-height:44px}.full-menu[open] summary{margin-bottom:18px}#eventView .compose{margin-top:20px}
+
+.available-items{border:0;margin:0 0 20px;padding:0;min-width:0}
+.available-group{margin:0 0 18px}.available-group h3{margin:0 0 8px;font-size:.85rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.item-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.item-option{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--line);font-size:1.08rem;line-height:1.25;min-height:48px;cursor:pointer}
+.item-option input{accent-color:var(--accent);flex-shrink:0;width:16px;height:16px;margin:0}
+.item-option:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.own-option{margin-top:10px}
+.drink-details{margin-top:16px;color:var(--muted);font-size:1rem}
+.drink-details summary{cursor:pointer;padding:5px 0}
+.drink-details input{margin-top:8px}
+@media(max-width:360px){.item-options{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
