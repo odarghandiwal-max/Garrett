@@ -15,8 +15,8 @@ $("evHead").innerHTML='<li class="event invitation-event"><h1 class="sr-only">Fr
 $("eventView").querySelector(".lede").textContent="Pick something below or bring a favorite of your own. Ham and turkey are on us.";
 $("pl-h").textContent="What to bring";
 const names=PARTIES.flatMap(p=>p.names.concat(p.kids||[]));
-const blankForm='<h2 class="label" id="add-h">Add your name</h2><p class="hint">Pick from the list or type your own idea. You can edit your entry after saving.</p>'+
-'<form id="signupForm"><div class="grid"><div class="field"><label for="guestName">Your name</label><input id="guestName" type="text" autocomplete="name" list="guestNames" maxlength="60" required placeholder="Your name"><datalist id="guestNames">'+names.map(n=>'<option value="'+esc(n)+'"></option>').join("")+'</datalist></div>'+
+const blankForm='<h2 class="label" id="add-h">What are you bringing?</h2><p class="hint">Choose an item, add your name, and save. Or bring a favorite of your own.</p>'+
+'<form id="signupForm"><div class="grid"><div class="field wide"><label for="quickDish">Choose something to bring</label><select id="quickDish"><option value="">Pick a dish, drink or supply</option>'+MENU.map((m,mi)=>'<optgroup label="'+esc(m[0])+'">'+m[2].map((dish,di)=>'<option value="'+mi+':'+di+'">'+esc(dish)+'</option>').join("")+'</optgroup>').join("")+'<option value="custom">Something else — I’ll type my own</option></select></div><div class="field"><label for="guestName">Your name</label><input id="guestName" type="text" autocomplete="name" list="guestNames" maxlength="60" required placeholder="Your name"><datalist id="guestNames">'+names.map(n=>'<option value="'+esc(n)+'"></option>').join("")+'</datalist></div>'+
 '<div class="field"><label for="bringing">What are you bringing?</label><input id="bringing" type="text" maxlength="160" required placeholder="Pick above or type your own"></div>'+
 '<div class="field"><label for="course">Category</label><select id="course">'+KINDS.map(k=>'<option value="'+k[0]+'">'+k[1]+'</option>').join("")+'</select></div>'+
 '<div class="field"><label for="note">Note (optional)</label><input id="note" type="text" maxlength="160" placeholder="For example: serves 8"></div>'+
@@ -24,7 +24,8 @@ const blankForm='<h2 class="label" id="add-h">Add your name</h2><p class="hint">
 '</div><div class="row"><button class="primary" id="saveButton" type="submit" disabled>Save my item</button><button class="text-button" id="newButton" type="button" hidden>Add another item</button><span class="status" id="saveStatus" role="status" aria-live="polite"></span></div></form>'+
 '<div id="savedLink" hidden><p class="after">To edit on another device, keep this private link. It lets you edit only this entry.</p><div class="row"><input id="editLink" type="text" readonly aria-label="Your private edit link"><button id="copyLink" class="text-button" type="button">Copy edit link</button></div></div><p class="after">Names, items and drink preferences appear on the shared board.</p>';
 $("eventView").querySelector(".compose").innerHTML=blankForm;
-const menu=document.createElement("section");menu.id="menu";menu.innerHTML='<h2 class="label">Pick something to bring</h2><p class="lede">Choose an item below, or <a href="#signup" id="ownIdea">bring something else</a>.</p><div id="menuRows"></div>';$("eventView").querySelector(".compose").before(menu);
+$("evHead").after($("eventView").querySelector(".compose"));
+const menu=document.createElement("section");menu.id="menu";menu.innerHTML='<details class="full-menu"><summary>Browse the full menu</summary><p class="lede">Choose below, or <a href="#signup" id="ownIdea">bring something else</a>.</p><div id="menuRows"></div></details>';$("eventView").querySelector(".potluck").after(menu);
 $("guestsView").querySelector(".compose").remove();
 $("guestsView").querySelector(".intro p").textContent="Good company, all together. Families and friends are grouped together below.";
 $("lgList").innerHTML='<section class="lg"><h3>Friendsgiving</h3><dl class="facts"><div class="fact"><dt>When</dt><dd>Saturday, November 21, 2026 at 2:00 PM PST</dd></div><div class="fact"><dt>Where</dt><dd>158 Santa Ana Ave, Long Beach, CA'+maps+'</dd></div><div class="fact"><dt>Mains</dt><dd>Onay & Jordan are providing Honey Baked Ham and turkey.</dd></div><div class="fact"><dt>Food</dt><dd>Pick a side, appetizer, dessert, drink or supply from the menu, or bring your own favorite.</dd></div></dl></section>';
@@ -95,6 +96,10 @@ $("signupForm").addEventListener("submit",async ev=>{
 });
 ["guestName","bringing"].forEach(id=>$(id).addEventListener("input",()=>$(id).setCustomValidity("")));
 $("newButton").addEventListener("click",reset);
+$("quickDish").addEventListener("change",()=>{
+ const value=$("quickDish").value;if(value==="custom"){$("bringing").value="";$("bringing").focus();return;}
+ if(!value)return;const [mi,di]=value.split(":").map(Number);$("bringing").value=MENU[mi][2][di];$("course").value=MENU[mi][1];
+});
 $("ownIdea").addEventListener("click",ev=>{ev.preventDefault();reset();showForm();});
 $("copyLink").addEventListener("click",async()=>{try{await navigator.clipboard.writeText($("editLink").value);$("saveStatus").textContent="Private edit link copied.";}catch(e){$("editLink").focus();$("editLink").select();$("saveStatus").textContent="Select and copy your edit link."; }});
 window.addEventListener("hashchange",route);render();route();load();
