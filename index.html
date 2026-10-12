@@ -90,6 +90,7 @@ footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);color:v
 #evHead p.desc{margin:18px auto 0}
 #eventView .potluck{margin-top:24px}
 
+.guest-party{padding:20px 0;border-top:1px solid var(--line)}.guest-party h2{font:inherit;font-weight:700;font-size:1.35rem;margin:0 0 4px}.guest-party p{margin:0;color:var(--muted)}.guest-status{font-size:1rem;color:var(--muted);font-style:italic}
 </style>
 </head>
 <body>
@@ -139,7 +140,7 @@ var EVENTS = [{
  location:"Location to be announced",eyebrow:"You’re invited to",
  tagline:["Good food","Good company","Same energy"],
  description:"Bring your favorite dish or drink. See the potluck board, then send us what you plan to bring.",
- potluck:true,dishes:[],guests:[],
+ potluck:true,dishes:[{dish:"Honey Baked Ham",who:"Onay & Jordan",kind:"main",note:"Provided by the hosts"},{dish:"Turkey",who:"Onay & Jordan",kind:"main",note:"Provided by the hosts"}],guests:[],
  logistics:[{label:"Food",value:"Potluck. Bring a favorite dish or drink.",link:"friendsgiving",linkText:"Claim a dish"},{label:"Parking",value:"To be announced",tba:true}]
 }];
 var GROUPS=["Family","Friends","Neighbors","Work","Other"];
@@ -392,6 +393,18 @@ document.getElementById("gsForm").addEventListener("submit",function(ev){ev.prev
       document.getElementById("evHead").innerHTML = card(current, parse(current), false, false);
     }
   }, 60000);
+
+var PARTIES=[{"label":"Onay & Jordan","names":["Onay","Jordan"],"status":"yes","hosts":true},{"label":"Sterling & Jasmine","names":["Sterling","Jasmine"],"kids":["Harlo","Atlas"]},{"label":"Tyler & Kayla","names":["Tyler","Kayla"],"kids":["Hunter"]},{"label":"Sophia & Parker","names":["Sophia","Parker"]},{"label":"Adi & Dolaf","names":["Adi","Dolaf"]},{"label":"Shauna & Paul","names":["Shauna","Paul"]},{"label":"Annabelle & Rafik","names":["Annabelle","Rafik"],"status":"maybe"},{"label":"Evan & Louise","names":["Evan","Louise"],"status":"maybe"},{"label":"HLers","names":["Sahar","Jasmine (Sahar’s)","Shay","Hilay"]},{"label":"Michelle","names":["Michelle"]},{"label":"Brad","names":["Brad"]},{"label":"Shabnam","names":["Shabnam"]},{"label":"Nawa","names":["Nawa"]},{"label":"Zoe","names":["Zoe"],"status":"maybe"}];
+EVENTS[0].guests = PARTIES.flatMap(function(p){return p.names.concat(p.kids||[]).map(function(n){return {who:n,group:p.label,status:p.status||"pending"};});});
+renderGuests = function(){
+ var total=PARTIES.reduce(function(n,p){return n+p.names.length+(p.kids||[]).length;},0);
+ document.getElementById("gsList").innerHTML='<p class="count">'+total+' on the guest list</p>'+PARTIES.map(function(p){
+ var names=p.label==="HLers"?p.names.join(", "):p.label;
+ var label=p.hosts?"Hosting":p.status==="maybe"?"Maybe":"Invited";
+ return '<section class="guest-party"><h2>'+esc(names)+'</h2>'+(p.kids&&p.kids.length?'<p>With '+esc(p.kids.join(" & "))+'</p>':"")+'<span class="guest-status">'+esc(label)+'</span></section>';
+ }).join("");
+};
+
 })();
 </script>
 
