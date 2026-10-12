@@ -12,20 +12,19 @@ try{owned=JSON.parse(localStorage.getItem("garrett-owned")||"{}");}catch(e){}
 function remember(id,token){owned[id]=token;try{localStorage.setItem("garrett-owned",JSON.stringify(owned));}catch(e){}}
 const maps='<div class="map-links"><a href="https://www.google.com/maps/search/?api=1&query=158%20Santa%20Ana%20Ave%2C%20Long%20Beach%2C%20CA" target="_blank" rel="noopener noreferrer" aria-label="Open location in Google Maps"><svg class="map-pin" viewBox="0 0 32 40" aria-hidden="true" focusable="false"><path fill="currentColor" d="M16 1C7.7 1 1 7.7 1 16c0 10.7 15 23 15 23s15-12.3 15-23C31 7.7 24.3 1 16 1Z"/><path d="m11 21 10-10m-8 0h8v8" fill="none" stroke="var(--bg)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Google Maps</span></a><a href="https://maps.apple.com/?q=158%20Santa%20Ana%20Ave%2C%20Long%20Beach%2C%20CA" target="_blank" rel="noopener noreferrer" aria-label="Open location in Apple Maps"><svg class="map-pin" viewBox="0 0 32 40" aria-hidden="true" focusable="false"><path fill="currentColor" d="M16 1C7.7 1 1 7.7 1 16c0 10.7 15 23 15 23s15-12.3 15-23C31 7.7 24.3 1 16 1Z"/><path d="m11 21 10-10m-8 0h8v8" fill="none" stroke="var(--bg)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Apple Maps</span></a></div>';
 $("evHead").innerHTML='<li class="event invitation-event"><h1 class="sr-only">Friendsgiving</h1><img class="invitation-image" src="assets/friendsgiving-invitation.jpg" width="1206" height="1761" alt="You’re invited to Friendsgiving at The Garretts, Saturday November 21, 2026 at 2:00 PM. 158 Santa Ana Ave, Long Beach, CA 90803. Bring your favorite dish or drink.">'+maps+'</li>';
-$("eventView").querySelector(".lede").textContent="Pick something below or bring a favorite of your own. Ham and turkey are on us.";
-$("pl-h").textContent="What to bring";
+$("eventView").querySelector(".lede").textContent="Here is what everyone has signed up to bring. Ham and turkey are on us.";
+$("pl-h").textContent="Who’s bringing what";
 const names=PARTIES.flatMap(p=>p.names.concat(p.kids||[]));
-const blankForm='<h2 class="label" id="add-h">What are you bringing?</h2><p class="hint">Choose an item, add your name, and save. Or bring a favorite of your own.</p>'+
-'<form id="signupForm"><div class="grid"><div class="field wide"><label for="quickDish">Choose something to bring</label><select id="quickDish"><option value="">Pick a dish, drink or supply</option>'+MENU.map((m,mi)=>'<optgroup label="'+esc(m[0])+'">'+m[2].map((dish,di)=>'<option value="'+mi+':'+di+'">'+esc(dish)+'</option>').join("")+'</optgroup>').join("")+'<option value="custom">Something else — I’ll type my own</option></select></div><div class="field"><label for="guestName">Your name</label><input id="guestName" type="text" autocomplete="name" list="guestNames" maxlength="60" required placeholder="Your name"><datalist id="guestNames">'+names.map(n=>'<option value="'+esc(n)+'"></option>').join("")+'</datalist></div>'+
-'<div class="field"><label for="bringing">What are you bringing?</label><input id="bringing" type="text" maxlength="160" required placeholder="Pick above or type your own"></div>'+
-'<div class="field"><label for="course">Category</label><select id="course">'+KINDS.map(k=>'<option value="'+k[0]+'">'+k[1]+'</option>').join("")+'</select></div>'+
-'<div class="field"><label for="note">Note (optional)</label><input id="note" type="text" maxlength="160" placeholder="For example: serves 8"></div>'+
-'<div class="field wide"><label for="drinkPreference">What do you like to drink? (optional)</label><input id="drinkPreference" type="text" maxlength="160" list="drinkIdeas" placeholder="For example: sparkling water, Pinot Noir, IPA or Diet Coke"><datalist id="drinkIdeas"><option value="Water"><option value="Sparkling water"><option value="White wine"><option value="Red wine"><option value="Sparkling cider"><option value="Beer"><option value="Soda"><option value="Coffee"><option value="Tea"></datalist><p class="field-help">A preference does not sign you up to bring it.</p></div>'+
-'</div><div class="row"><button class="primary" id="saveButton" type="submit" disabled>Save my item</button><button class="text-button" id="newButton" type="button" hidden>Add another item</button><span class="status" id="saveStatus" role="status" aria-live="polite"></span></div></form>'+
-'<div id="savedLink" hidden><p class="after">To edit on another device, keep this private link. It lets you edit only this entry.</p><div class="row"><input id="editLink" type="text" readonly aria-label="Your private edit link"><button id="copyLink" class="text-button" type="button">Copy edit link</button></div></div><p class="after">Names, items and drink preferences appear on the shared board.</p>';
+const blankForm='<h2 class="label" id="add-h">Choose something to bring</h2><p class="hint">Pick an available item or bring your own. Add your name and submit.</p>'+
+'<form id="signupForm"><fieldset class="available-items"><legend class="sr-only">Available items</legend><div id="menuRows"></div><label class="item-option own-option"><input type="radio" name="item" value="custom" required><span>Bring my own</span></label></fieldset>'+
+'<div class="grid"><div class="field wide" id="customField" hidden><label for="bringing">What are you bringing?</label><input id="bringing" type="text" maxlength="160" placeholder="Type your dish, drink or item"></div>'+
+'<div class="field wide"><label for="guestName">Your name</label><input id="guestName" type="text" autocomplete="name" list="guestNames" maxlength="60" required placeholder="Your name"><datalist id="guestNames">'+names.map(n=>'<option value="'+esc(n)+'"></option>').join("")+'</datalist></div></div>'+
+'<input id="course" type="hidden" value="side"><input id="note" type="hidden" value="">'+
+'<details class="drink-details"><summary>Drink preference (optional)</summary><label for="drinkPreference" class="sr-only">What do you like to drink?</label><input id="drinkPreference" type="text" maxlength="160" placeholder="For example: sparkling water or Pinot Noir"><p class="field-help">Tell us what you like; you do not have to bring it.</p></details>'+
+'<div class="row"><button class="primary" id="saveButton" type="submit" disabled>Submit</button><button class="text-button" id="newButton" type="button" hidden>Add another item</button><span class="status" id="saveStatus" role="status" aria-live="polite"></span></div></form>'+
+'<div id="savedLink" hidden><p class="after">Keep this private link to edit your entry on another device.</p><div class="row"><input id="editLink" type="text" readonly aria-label="Your private edit link"><button id="copyLink" class="text-button" type="button">Copy edit link</button></div></div>';
 $("eventView").querySelector(".compose").innerHTML=blankForm;
 $("evHead").after($("eventView").querySelector(".compose"));
-const menu=document.createElement("section");menu.id="menu";menu.innerHTML='<details class="full-menu"><summary>Browse the full menu</summary><p class="lede">Choose below, or <a href="#signup" id="ownIdea">bring something else</a>.</p><div id="menuRows"></div></details>';$("eventView").querySelector(".potluck").after(menu);
 $("guestsView").querySelector(".compose").remove();
 $("guestsView").querySelector(".intro p").textContent="Good company, all together. Families and friends are grouped together below.";
 $("lgList").innerHTML='<section class="lg"><h3>Friendsgiving</h3><dl class="facts"><div class="fact"><dt>When</dt><dd>Saturday, November 21, 2026 at 2:00 PM PST</dd></div><div class="fact"><dt>Where</dt><dd>158 Santa Ana Ave, Long Beach, CA'+maps+'</dd></div><div class="fact"><dt>Mains</dt><dd>Onay & Jordan are providing Honey Baked Ham and turkey.</dd></div><div class="fact"><dt>Food</dt><dd>Pick a side, appetizer, dessert, drink or supply from the menu, or bring your own favorite.</dd></div></dl></section>';
@@ -40,24 +39,34 @@ function render(){
  const items=all.filter(g=>g.kind===k[0]);
  return '<section class="kind"><h3>'+k[1]+' <span class="n">'+items.length+'</span></h3><ul class="dishes">'+(items.length?items.map(g=>'<li><span class="dish">'+esc(g.bringing)+'</span><span class="by">'+esc(g.name)+'</span>'+(g.note?'<span class="note">'+esc(g.note)+'</span>':"")+(g.id&&owned[g.id]?'<button type="button" class="text-button edit-entry" data-id="'+esc(g.id)+'">Edit my item</button>':"")+'</li>').join(""):'<li class="none">Open for sign-ups</li>')+'</ul></section>';
  }).join("");
- $("menuRows").innerHTML=MENU.map((m,mi)=>'<section class="menu-group"><h3>'+m[0]+'</h3>'+m[2].map((dish,di)=>{
- const claims=entries.filter(g=>g.bringing.toLowerCase()===dish.toLowerCase());
- return '<div class="menu-item"><div><strong>'+esc(dish)+'</strong>'+(claims.length?'<small>'+claims.map(g=>esc(g.name)).join(", ")+' signed up</small>':"")+'</div><button class="text-button choose-item" type="button" data-item="'+mi+":"+di+'">'+(claims.length?"Bring more":"Bring this")+'</button></div>';
- }).join("")+'</section>').join("");
- $("menuRows").querySelectorAll(".choose-item").forEach(b=>b.addEventListener("click",()=>{
- const [mi,di]=b.dataset.item.split(":").map(Number);reset();$("bringing").value=MENU[mi][2][di];$("course").value=MENU[mi][1];showForm();
- }));
+ renderAvailable();
  $("plBoard").querySelectorAll(".edit-entry").forEach(b=>b.addEventListener("click",()=>edit(b.dataset.id)));
  const prefs=entries.filter(g=>g.drink_preference);
  let prefEl=$("drinkPrefs");if(!prefEl){prefEl=document.createElement("section");prefEl.id="drinkPrefs";$("plBoard").after(prefEl);}
  prefEl.innerHTML=prefs.length?'<h2 class="label">Drink preferences</h2><ul class="dishes">'+prefs.map(g=>'<li><span class="dish">'+esc(g.name)+'</span><span class="by">'+esc(g.drink_preference)+'</span></li>').join("")+'</ul>':"";
 }
+function renderAvailable(){
+ const selected=document.querySelector('input[name="item"]:checked')?.value;
+ $("menuRows").innerHTML=MENU.map((m,mi)=>{
+ const pending=m[2].map((dish,di)=>({dish,di})).filter(o=>!entries.some(e=>e.id!==currentId&&e.bringing.toLowerCase()===o.dish.toLowerCase()));
+ return pending.length?'<div class="available-group"><h3>'+esc(m[0])+'</h3><div class="item-options">'+pending.map(o=>'<label class="item-option"><input type="radio" name="item" value="'+mi+':'+o.di+'" required><span>'+esc(o.dish)+'</span></label>').join("")+'</div></div>':"";
+ }).join("")||'<p class="empty">The listed items are covered. Bring a favorite of your own.</p>';
+ if(selected){const radio=Array.from(document.querySelectorAll('input[name="item"]')).find(e=>e.value===selected);if(radio)radio.checked=true;}
+ document.querySelectorAll('input[name="item"]').forEach(input=>{input.onchange=()=>{
+ const custom=input.value==="custom";$("customField").hidden=!custom;
+ if(custom){$("bringing").value="";$("course").value="other";$("bringing").required=true;$("bringing").focus();}
+ else{const [mi,di]=input.value.split(":").map(Number);$("bringing").value=MENU[mi][2][di];$("course").value=MENU[mi][1];$("bringing").required=false;}
+ };});
+}
 function showForm(){$("eventView").hidden=false;$("guestsView").hidden=true;$("logisticsView").hidden=true;$("signupForm").scrollIntoView({behavior:"smooth",block:"start"});$("guestName").focus();}
-function reset(){currentId=null;currentToken=null;$("signupForm").reset();$("course").value="side";$("saveButton").textContent="Save my item";$("newButton").hidden=true;$("saveStatus").textContent="";$("savedLink").hidden=true;}
+function reset(){currentId=null;currentToken=null;$("signupForm").reset();$("course").value="side";$("saveButton").textContent="Submit";$("newButton").hidden=true;$("saveStatus").textContent="";$("savedLink").hidden=true;$("customField").hidden=true;$("bringing").required=false;renderAvailable();}
 function edit(id){
  const e=entries.find(e=>e.id===id);if(!e||!owned[id])return;
- currentId=id;currentToken=owned[id];
- $("guestName").value=e.name;$("bringing").value=e.bringing;$("course").value=e.kind;$("note").value=e.note;$("drinkPreference").value=e.drink_preference;$("saveButton").textContent="Save changes";$("newButton").hidden=false;$("saveStatus").textContent="";setEditLink();showForm();
+ currentId=id;currentToken=owned[id];renderAvailable();
+ $("guestName").value=e.name;$("bringing").value=e.bringing;$("course").value=e.kind;$("note").value=e.note;$("drinkPreference").value=e.drink_preference;$("saveButton").textContent="Save changes";$("newButton").hidden=false;$("saveStatus").textContent="";setEditLink();
+ const choice=Array.from(document.querySelectorAll('input[name="item"]')).find(input=>{if(input.value==="custom")return false;const [mi,di]=input.value.split(":").map(Number);return MENU[mi][2][di]===e.bringing;});
+ if(choice){choice.checked=true;$("customField").hidden=true;}else{document.querySelector('input[name="item"][value="custom"]').checked=true;$("customField").hidden=false;}
+ showForm();
 }
 function setEditLink(){const u=new URL(location.href);u.hash="friendsgiving?entry="+encodeURIComponent(currentId)+"&edit="+encodeURIComponent(currentToken);$("editLink").value=u.href;$("savedLink").hidden=false;}
 function route(){
@@ -96,11 +105,6 @@ $("signupForm").addEventListener("submit",async ev=>{
 });
 ["guestName","bringing"].forEach(id=>$(id).addEventListener("input",()=>$(id).setCustomValidity("")));
 $("newButton").addEventListener("click",reset);
-$("quickDish").addEventListener("change",()=>{
- const value=$("quickDish").value;if(value==="custom"){$("bringing").value="";$("bringing").focus();return;}
- if(!value)return;const [mi,di]=value.split(":").map(Number);$("bringing").value=MENU[mi][2][di];$("course").value=MENU[mi][1];
-});
-$("ownIdea").addEventListener("click",ev=>{ev.preventDefault();reset();showForm();});
 $("copyLink").addEventListener("click",async()=>{try{await navigator.clipboard.writeText($("editLink").value);$("saveStatus").textContent="Private edit link copied.";}catch(e){$("editLink").focus();$("editLink").select();$("saveStatus").textContent="Select and copy your edit link."; }});
 window.addEventListener("hashchange",route);render();route();load();
 setInterval(()=>{if(!document.hidden)load();},30000);
