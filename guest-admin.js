@@ -18,12 +18,12 @@ const auth=async(path,body)=>{
  const data=await res.json();if(!res.ok)throw Error(data.error_description||data.msg||data.error||"Login failed");return data;
 };
 const panel=document.createElement("section");panel.className="compose";panel.id="guestAdminPanel";
-panel.innerHTML='<h2 class="label">Guest list management</h2><p id="guestAdminMessage" class="field-help">Guests can view this list. Only the hosts can edit it.</p><form id="guestLoginForm" class="grid" autocomplete="on"><div class="field"><label for="guestEmail">Host email</label><input id="guestEmail" type="email" autocomplete="username" required></div><div class="field"><label for="guestPassword">Password</label><input id="guestPassword" type="password" autocomplete="current-password" required></div><div class="field wide"><button class="primary" type="submit">Host sign in</button></div></form><div id="guestAdminTools" hidden><div class="row"><button type="button" class="text-button" id="guestLogout">Sign out</button><button type="button" class="text-button" id="guestNew">Add guest or group</button></div><form id="guestEditForm" hidden><input type="hidden" id="guestId"><div class="grid"><div class="field wide"><label for="guestLabel">Group name / display heading</label><input id="guestLabel" type="text" maxlength="100" required placeholder="e.g. Sterling & Jasmine"></div><div class="field wide"><label for="guestNames">Adults / guests (one per line)</label><textarea id="guestNames" rows="3"></textarea></div><div class="field wide"><label for="guestKids">Children (one per line, optional)</label><textarea id="guestKids" rows="2"></textarea></div><div class="field"><label for="guestStatus">RSVP status</label><select id="guestStatus"><option value="invited">Invited</option><option value="confirmed">Confirmed</option><option value="maybe">Maybe</option><option value="declined">Declined</option></select></div></div><div class="row"><button type="submit" class="primary">Save changes</button><button type="button" class="text-button" id="guestCancel">Cancel</button><button type="button" class="text-button" id="guestDelete" hidden>Delete group</button></div></form></div>';
+panel.innerHTML='<h2 class="label">Guest list management</h2><p id="guestAdminMessage" class="field-help">Guests can view this list. Anyone can edit this list. No login required.</p><form id="guestLoginForm" class="grid" autocomplete="on" hidden><div class="field"><label for="guestEmail">Host email</label><input id="guestEmail" type="email" autocomplete="username" required></div><div class="field"><label for="guestPassword">Password</label><input id="guestPassword" type="password" autocomplete="current-password" required></div><div class="field wide"><button class="primary" type="submit">Host sign in</button></div></form><div id="guestAdminTools"><div class="row"><button type="button" class="text-button" id="guestNew">Add guest or group</button></div><form id="guestEditForm" hidden><input type="hidden" id="guestId"><div class="grid"><div class="field wide"><label for="guestLabel">Group name / display heading</label><input id="guestLabel" type="text" maxlength="100" required placeholder="e.g. Sterling & Jasmine"></div><div class="field wide"><label for="guestNames">Adults / guests (one per line)</label><textarea id="guestNames" rows="3"></textarea></div><div class="field wide"><label for="guestKids">Children (one per line, optional)</label><textarea id="guestKids" rows="2"></textarea></div><div class="field"><label for="guestStatus">RSVP status</label><select id="guestStatus"><option value="invited">Invited</option><option value="confirmed">Confirmed</option><option value="maybe">Maybe</option><option value="declined">Declined</option></select></div></div><div class="row"><button type="submit" class="primary">Save changes</button><button type="button" class="text-button" id="guestCancel">Cancel</button><button type="button" class="text-button" id="guestDelete" hidden>Delete group</button></div></form></div>';
 el("gsList").after(panel);
 const msg=s=>el("guestAdminMessage").textContent=s;
 function render(){
  const count=groups.reduce((n,g)=>n+(g.names?.length||0)+(g.kids?.length||0),0);
- el("gsList").innerHTML='<p class="count">'+count+' invited guests · plus Onay & Jordan hosting</p>'+groups.map(g=>'<section class="guest-party"><h2>'+esc(g.label)+'</h2><p>'+esc((g.names||[]).join(" & "))+'</p>'+(g.kids?.length?'<p>With '+esc(g.kids.join(" & "))+'</p>':"")+(g.status!=="invited"?'<span class="guest-status">'+esc(g.status)+'</span>':"")+(token&&g.id?'<div class="row"><button class="text-button guestEdit" type="button" data-id="'+esc(g.id)+'">Edit group</button></div>':"")+'</section>').join("");
+ el("gsList").innerHTML='<p class="count">'+count+' invited guests · plus Onay & Jordan hosting</p>'+groups.map(g=>'<section class="guest-party"><h2>'+esc(g.label)+'</h2><p>'+esc((g.names||[]).join(" & "))+'</p>'+(g.kids?.length?'<p>With '+esc(g.kids.join(" & "))+'</p>':"")+(g.status!=="invited"?'<span class="guest-status">'+esc(g.status)+'</span>':"")+(g.id?'<div class="row"><button class="text-button guestEdit" type="button" data-id="'+esc(g.id)+'">Edit group</button></div>':"")+'</section>').join("");
  el("gsList").querySelectorAll(".guestEdit").forEach(b=>b.onclick=()=>open(groups.find(g=>g.id===b.dataset.id)));
 }
 async function load(){try{const data=await api("garrett_guest_groups?select=*&order=sort_order.asc,created_at.asc");if(Array.isArray(data)){groups=data;render();}}catch(e){msg("Guest list database is not configured yet. The existing list is displayed.");}}
@@ -43,9 +43,9 @@ el("guestLoginForm").onsubmit=async e=>{
 };
 el("guestNew").onclick=()=>open(null);
 el("guestCancel").onclick=()=>el("guestEditForm").hidden=true;
-el("guestLogout").onclick=()=>{token=null;setLoggedIn(false);msg("Signed out.");};
+
 el("guestEditForm").onsubmit=async e=>{
- e.preventDefault();if(!token)return;
+ e.preventDefault();
  const id=el("guestId").value;
  const lines=id=>(el(id).value.split(/\n|,/).map(s=>s.trim()).filter(Boolean));
  const data={label:el("guestLabel").value.trim(),names:lines("guestNames"),kids:lines("guestKids"),status:el("guestStatus").value,sort_order:id?(groups.find(g=>g.id===id)?.sort_order||0):groups.length+1};
@@ -56,7 +56,7 @@ el("guestEditForm").onsubmit=async e=>{
  }catch(err){msg("Could not save: "+err.message);}
 };
 el("guestDelete").onclick=async()=>{
- const id=el("guestId").value;if(!id||!token||!confirm("Delete this entire guest group?"))return;
+ const id=el("guestId").value;if(!id||!confirm("Delete this entire guest group?"))return;
  try{await api("garrett_guest_groups?id=eq."+encodeURIComponent(id),"DELETE");el("guestEditForm").hidden=true;msg("Group deleted.");await load();}catch(err){msg("Could not delete: "+err.message);}
 };
 render();load();
