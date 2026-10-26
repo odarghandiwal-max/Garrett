@@ -29,8 +29,8 @@ $("evHead").innerHTML='<li class="event invitation-event"><h1 class="sr-only">Fr
 $("eventView").querySelector(".lede").textContent="Here is what everyone has signed up to bring. Ham and turkey are on us.";
 $("pl-h").textContent="Who’s bringing what";
 const names=PARTIES.flatMap(p=>p.names.concat(p.kids||[]));
-const blankForm='<h2 class="label" id="add-h">Choose something to bring</h2><p class="hint">Planning for about 30 people. Each sign-up covers the portion shown. Pick an item, add your name, and submit. Anyone can edit the list.</p>'+
-'<form id="signupForm"><fieldset class="available-items"><legend class="sr-only">Available items</legend><div id="menuRows"></div><label class="item-option own-option"><input type="radio" name="item" value="custom" required><span>Bring my own</span></label><label class="item-option own-option"><input type="radio" name="item" value="myself" required><span>Just bringing myself</span></label></fieldset>'+
+const blankForm='<h2 class="label" id="add-h">Choose something to bring</h2><p class="hint">Planning for about 30 people. Each sign-up covers the portion shown. Select one or more items, add your name, and submit. Anyone can edit the list.</p>'+
+'<form id="signupForm"><fieldset class="available-items"><legend class="sr-only">Available items</legend><div id="menuRows"></div><label class="item-option own-option"><input type="checkbox" name="item" value="custom"><span>Bring my own</span></label><label class="item-option own-option"><input type="checkbox" name="item" value="myself"><span>Just bringing myself</span></label></fieldset>'+
 '<div class="grid"><div class="field wide" id="customField" hidden><label for="bringing">What are you bringing?</label><input id="bringing" type="text" maxlength="160" placeholder="Type your dish, drink or item"></div>'+
 '<div class="field wide"><label for="guestName">Your name</label><input id="guestName" type="text" autocomplete="name" list="guestNames" maxlength="60" required placeholder="Your name"><datalist id="guestNames">'+names.map(n=>'<option value="'+esc(n)+'"></option>').join("")+'</datalist></div></div>'+
 '<input id="course" type="hidden" value="side">'+
@@ -60,12 +60,12 @@ function render(){
  prefEl.innerHTML=prefs.length?'<h2 class="label">Drink preferences</h2><ul class="dishes">'+prefs.map(g=>'<li><span class="dish">'+esc(g.name)+'</span><span class="by">'+esc(g.drink_preference)+'</span></li>').join("")+'</ul>':"";
 }
 function renderAvailable(){
- const selected=document.querySelector('input[name="item"]:checked')?.value;
+ const selected=Array.from(document.querySelectorAll('input[name="item"]:checked')).map(x=>x.value);
  $("menuRows").innerHTML=MENU.map((m,mi)=>{
  const pending=m[2].map((dish,di)=>({dish,di})).filter(o=>covered(o.dish)<PLAN[o.dish].slots);
- return pending.length?'<div class="available-group"><h3>'+esc(m[0])+'</h3><div class="item-options">'+pending.map(o=>'<label class="item-option"><input type="radio" name="item" value="'+mi+':'+o.di+'" required><span>'+esc(o.dish)+'<small class="portion">'+esc(PLAN[o.dish].unit)+'</small><small class="coverage">'+Math.min(covered(o.dish),PLAN[o.dish].slots)+' of '+PLAN[o.dish].slots+' taken · '+Math.max(0,PLAN[o.dish].slots-covered(o.dish))+' available</small></span></label>').join("")+'</div></div>':"";
+ return pending.length?'<div class="available-group"><h3>'+esc(m[0])+'</h3><div class="item-options">'+pending.map(o=>'<label class="item-option"><input type="checkbox" name="item" value="'+mi+':'+o.di+'"><span>'+esc(o.dish)+'<small class="portion">'+esc(PLAN[o.dish].unit)+'</small><small class="coverage">'+Math.min(covered(o.dish),PLAN[o.dish].slots)+' of '+PLAN[o.dish].slots+' taken · '+Math.max(0,PLAN[o.dish].slots-covered(o.dish))+' available</small></span></label>').join("")+'</div></div>':"";
  }).join("")||'<p class="empty">The listed items are covered. Bring a favorite of your own.</p>';
- if(selected){const radio=Array.from(document.querySelectorAll('input[name="item"]')).find(e=>e.value===selected);if(radio)radio.checked=true;}
+ for(const input of document.querySelectorAll('input[name="item"]'))input.checked=selected.includes(input.value);
  document.querySelectorAll('input[name="item"]').forEach(input=>{
  let wasChecked=false;
  input.closest("label").onpointerdown=()=>{wasChecked=input.checked;};
@@ -75,6 +75,7 @@ function renderAvailable(){
  };
  input.onchange=()=>{
  if(!input.checked)return;
+ if(input.value==="custom"||input.value==="myself"){document.querySelectorAll('input[name="item"]').forEach(other=>{if(other!==input)other.checked=false;});}else{document.querySelectorAll('input[name="item"][value="custom"],input[name="item"][value="myself"]').forEach(other=>other.checked=false);}
  const custom=input.value==="custom";$("customField").hidden=!custom;
  if(custom){$("bringing").value="";$("course").value="other";$("bringing").required=true;$("bringing").focus();}
  else if(input.value==="myself"){$("bringing").value="Just bringing myself";$("course").value="other";$("bringing").required=false;}else{const [mi,di]=input.value.split(":").map(Number);$("bringing").value=MENU[mi][2][di];$("course").value=MENU[mi][1];$("bringing").required=false;}
@@ -113,15 +114,29 @@ async function load(){
 $("signupForm").addEventListener("submit",async ev=>{
  ev.preventDefault();if(!ready||saving)return;
  const clean=id=>$(id).value.trim().replace(/\s+/g," ");
- $("guestName").setCustomValidity(clean("guestName")?"":"Enter your name.");$("bringing").setCustomValidity(clean("bringing")?"":"Enter what you are bringing.");
+ const checked=Array.from(document.querySelectorAll('input[name="item"]:checked'));
+ $("guestName").setCustomValidity(clean("guestName")?"":"Enter your name.");
+ if(!checked.length){$("saveStatus").textContent="Select at least one item.";return;}
+ const selections=checked.map(input=>{
+  if(input.value==="custom")return {bringing:clean("bringing"),kind:"other"};
+  if(input.value==="myself")return {bringing:"Just bringing myself",kind:"other"};
+  const [mi,di]=input.value.split(":").map(Number);
+  return {bringing:MENU[mi][2][di],kind:MENU[mi][1]};
+ });
+ $("bringing").setCustomValidity(selections.some(x=>!x.bringing)?"Enter what you are bringing.":"");
  if(!ev.target.reportValidity())return;
- const id=currentId||crypto.randomUUID(),token=currentToken||Array.from(crypto.getRandomValues(new Uint8Array(32)),b=>b.toString(16).padStart(2,"0")).join("");
  saving=true;$("saveButton").disabled=true;$("saveStatus").textContent="Saving…";
+ let done=0;
  try{
- const data=await api("rpc/garrett_save_signup","POST",{p_id:id,p_token:token,p_name:clean("guestName"),p_bringing:clean("bringing"),p_kind:$("course").value,p_note:entries.find(e=>e.id===currentId)?.note||"",p_drink_preference:clean("drinkPreference")});
- const row=Array.isArray(data)?data[0]:data;if(!row||row.id!==id)throw Error("SAVE_NOT_CONFIRMED");
- currentId=id;currentToken=token;remember(id,token);entries=entries.filter(e=>e.id!==id).concat(row);render();$("saveStatus").textContent="Saved! You’re on the list.";$("saveButton").textContent="Save changes";$("newButton").hidden=false;
- }catch(e){currentId=id;currentToken=token;remember(id,token);$("saveStatus").textContent="Could not confirm the save. Please try again; your form is still here.";}
+  for(const selection of selections){
+   const id=done===0&&currentId?currentId:crypto.randomUUID();
+   const token=done===0&&currentToken?currentToken:Array.from(crypto.getRandomValues(new Uint8Array(32)),b=>b.toString(16).padStart(2,"0")).join("");
+   const data=await api("rpc/garrett_save_signup","POST",{p_id:id,p_token:token,p_name:clean("guestName"),p_bringing:selection.bringing,p_kind:selection.kind,p_note:entries.find(e=>e.id===id)?.note||"",p_drink_preference:clean("drinkPreference")});
+   const row=Array.isArray(data)?data[0]:data;if(!row||row.id!==id)throw Error("SAVE_NOT_CONFIRMED");
+   remember(id,token);entries=entries.filter(e=>e.id!==id).concat(row);done++;
+  }
+  reset();render();$("saveStatus").textContent=done+" "+(done===1?"item":"items")+" saved! You’re on the list.";
+ }catch(e){render();$("saveStatus").textContent=done?done+" saved; remaining items could not be saved. Please try again.":"Could not confirm the save. Please try again.";}
  finally{saving=false;$("saveButton").disabled=!ready;}
 });
 ["guestName","bringing"].forEach(id=>$(id).addEventListener("input",()=>$(id).setCustomValidity("")));
