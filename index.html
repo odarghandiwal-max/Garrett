@@ -155,12 +155,12 @@ input[type="email"],input[type="password"]{font:inherit;color:var(--fg);backgrou
 <div class="wrap">
 <header class="mast"><div class="brand">The Garretts</div><nav aria-label="Primary"><a href="#events">Potluck</a><a href="#invite">Invitation & Details</a><a href="#guests" data-go="guests">Guest List</a></nav></header>
 <noscript><p class="empty">Please enable JavaScript to view events and the potluck board.</p></noscript>
-<main id="home">
+<main id="home" hidden>
 <section class="intro"><h1>Friendsgiving</h1><p>Bring your favorite dish or drink. See what everyone is bringing and add yours below.</p></section>
 <section id="events" aria-labelledby="up-h"><h2 class="label" id="up-h">Upcoming events</h2><ul class="events" id="upcoming"></ul></section>
 <section class="past" id="past" aria-labelledby="past-h"><h2 class="label" id="past-h">Past events</h2><ul class="events" id="pastList"></ul></section>
 </main>
-<main id="eventView" hidden>
+<main id="eventView">
 <p class="crumb"><a href="#" data-go="">&larr; All events</a></p><ul class="events" id="evHead"></ul>
 <section class="potluck" aria-labelledby="pl-h"><h2 class="label" id="pl-h">Potluck</h2><p class="kicker">Bring your favorite dish or drink</p><p class="lede">See what everyone is bringing, grouped by course, so we do not end up with six pies.</p><p class="count" id="plCount"></p><div id="plBoard"></div></section>
 <section class="compose" aria-labelledby="add-h"><h2 class="label" id="add-h">Claim a dish</h2><p class="hint">Enter your dish, then copy the message to send to us.</p>
