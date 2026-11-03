@@ -41,7 +41,9 @@ el("guestEditForm").onsubmit=async e=>{
  }catch(err){msg("Could not save: "+err.message);}
 };
 el("guestDelete").onclick=async()=>{
- const id=el("guestId").value;if(!id||!confirm("Delete this entire guest group?"))return;
+ const id=el("guestId").value;if(!id)return;
+ const group=groups.find(g=>g.id===id);
+ if(!confirm("Remove "+(group?.label||"this guest group")+" and everyone listed in it? This cannot be undone."))return;
  try{await api("garrett_guest_groups?id=eq."+encodeURIComponent(id),"DELETE");el("guestEditForm").hidden=true;msg("Group deleted.");await load();}catch(err){msg("Could not delete: "+err.message);}
 };
 render();load();
