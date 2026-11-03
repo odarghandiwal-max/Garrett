@@ -145,11 +145,13 @@ input[type="email"],input[type="password"]{font:inherit;color:var(--fg);backgrou
 .dishes .entry-actions button{box-sizing:border-box;min-width:88px;min-height:44px;padding:9px 12px;font:inherit;font-size:1rem;text-align:center;border:1px solid var(--rule);background:transparent;color:var(--fg);cursor:pointer}
 .dishes .entry-actions button:hover,.dishes .entry-actions button:focus-visible{background:var(--surface);outline-offset:2px}
 @media(max-width:620px){.dishes li:not(.none){grid-template-columns:minmax(0,1fr)}.dishes .entry-actions{grid-column:1;grid-row:auto;margin-top:4px}.dishes .entry-actions button{min-width:90px}}
+
+.invite-photo{max-width:760px;margin:20px auto 40px}.invite-photo img{display:block;width:100%;height:auto}.potluck{margin-top:12px}#eventView .potluck{padding-top:12px}
 </style>
 </head>
 <body>
 <div class="wrap">
-<header class="mast"><div class="brand">The Garretts</div><nav aria-label="Primary"><a href="#events">Events</a><a href="#logistics" data-go="logistics">Logistics</a><a href="#guests" data-go="guests">Guests</a><a href="#past">Past events</a></nav></header>
+<header class="mast"><div class="brand">The Garretts</div><nav aria-label="Primary"><a href="#events">Potluck</a><a href="#invite">Invitation & Details</a><a href="#guests" data-go="guests">Guest List</a></nav></header>
 <noscript><p class="empty">Please enable JavaScript to view events and the potluck board.</p></noscript>
 <main id="home">
 <section class="intro"><h1>Friendsgiving</h1><p>Bring your favorite dish or drink. See what everyone is bringing and add yours below.</p></section>
@@ -187,6 +189,6 @@ input[type="email"],input[type="password"]{font:inherit;color:var(--fg);backgrou
 <!-- Integrated front-end fixes. No separate patch is needed. -->
 
 
-<script src="app.js?v=20261103-actions" defer></script><script src="guest-admin.js?v=20261103-guests2" defer></script>
+<script src="app.js?v=20261103-potluck-home" defer></script><script src="guest-admin.js?v=20261103-guests2" defer></script>
 </body>
 </html>
