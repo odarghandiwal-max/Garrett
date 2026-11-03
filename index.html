@@ -135,7 +135,17 @@ footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);color:v
 .item-option{align-items:center;padding:12px 14px}
 .item-option .portion,.item-option .coverage{display:block;font-size:.92rem;line-height:1.4;margin-top:3px;color:var(--muted);font-weight:500}
 .dishes .portion{font-size:1rem;color:var(--muted)}
-input[type="email"],input[type="password"]{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--rule);padding:10px 12px;width:100%;min-height:46px}#guestAdminPanel{margin-top:32px}#guestEditForm{margin-top:20px}.guest-party .row{margin-top:8px}</style>
+input[type="email"],input[type="password"]{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--rule);padding:10px 12px;width:100%;min-height:46px}#guestAdminPanel{margin-top:32px}#guestEditForm{margin-top:20px}.guest-party .row{margin-top:8px}
+/* Consistent potluck contribution actions */
+.dishes li:not(.none){display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px 18px;padding:14px 0;border-bottom:1px solid var(--line)}
+.dishes .dish,.dishes .portion,.dishes .by{grid-column:1;min-width:0}
+.dishes .dish{font-size:1.2rem;line-height:1.35}
+.dishes .portion,.dishes .by{font-size:1rem;line-height:1.35}
+.dishes .entry-actions{grid-column:2;grid-row:1 / span 3;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.dishes .entry-actions button{box-sizing:border-box;min-width:88px;min-height:44px;padding:9px 12px;font:inherit;font-size:1rem;text-align:center;border:1px solid var(--rule);background:transparent;color:var(--fg);cursor:pointer}
+.dishes .entry-actions button:hover,.dishes .entry-actions button:focus-visible{background:var(--surface);outline-offset:2px}
+@media(max-width:620px){.dishes li:not(.none){grid-template-columns:minmax(0,1fr)}.dishes .entry-actions{grid-column:1;grid-row:auto;margin-top:4px}.dishes .entry-actions button{min-width:90px}}
+</style>
 </head>
 <body>
 <div class="wrap">
