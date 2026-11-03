@@ -26,6 +26,10 @@ try{owned=JSON.parse(localStorage.getItem("garrett-owned")||"{}");}catch(e){}
 function remember(id,token){owned[id]=token;try{localStorage.setItem("garrett-owned",JSON.stringify(owned));}catch(e){}}
 const maps='<div class="map-links"><a href="https://www.google.com/maps/search/?api=1&query=158%20Santa%20Ana%20Ave%2C%20Long%20Beach%2C%20CA" target="_blank" rel="noopener noreferrer" aria-label="Open location in Google Maps"><svg class="map-pin" viewBox="0 0 32 40" aria-hidden="true" focusable="false"><path d="M16 2C8.3 2 2 8.3 2 16c0 9.5 14 22 14 22s14-12.5 14-22C30 8.3 23.7 2 16 2Z" fill="currentColor"/><circle cx="16" cy="15.5" r="5" fill="var(--bg)"/></svg><span>Google Maps</span></a><a href="https://maps.apple.com/?q=158%20Santa%20Ana%20Ave%2C%20Long%20Beach%2C%20CA" target="_blank" rel="noopener noreferrer" aria-label="Open location in Apple Maps"><svg class="map-pin" viewBox="0 0 32 40" aria-hidden="true" focusable="false"><path d="M16 2C8.3 2 2 8.3 2 16c0 9.5 14 22 14 22s14-12.5 14-22C30 8.3 23.7 2 16 2Z" fill="currentColor"/><circle cx="16" cy="15.5" r="5" fill="var(--bg)"/></svg><span>Apple Maps</span></a></div>';
 $("evHead").innerHTML='<li class="event invitation-event"><h1 class="sr-only">Friendsgiving</h1><img class="invitation-image" src="assets/friendsgiving-invitation.jpg" width="1206" height="1761" alt="You’re invited to Friendsgiving at The Garretts, Saturday November 21, 2026 at 2:00 PM. 158 Santa Ana Ave, Long Beach, CA 90803. Bring your favorite dish or drink.">'+maps+'</li>';
+$("logisticsView").querySelector(".intro h1").textContent="You're invited.";
+$("logisticsView").querySelector(".intro p").textContent="Saturday, November 21, 2026 at 2:00 PM · The Garretts · Long Beach";
+$("logisticsView").querySelector(".intro").insertAdjacentHTML("afterend",'<div class="invite-photo"><img src="assets/friendsgiving-invitation.jpg" alt="Friendsgiving invitation — November 21, 2026 at 2 PM, 158 Santa Ana Ave, Long Beach" loading="lazy"></div>');
+$("evHead").remove();
 $("eventView").querySelector(".lede").textContent="Here is what everyone has signed up to bring. Ham and turkey are on us.";
 $("pl-h").textContent="Who’s bringing what";
 const names=PARTIES.flatMap(p=>p.names.concat(p.kids||[]));
@@ -100,9 +104,9 @@ function edit(id){
 function route(){
  const h=location.hash.slice(1).split("?")[0]||"friendsgiving";
  ["home","eventView","guestsView","logisticsView"].forEach(id=>$(id).hidden=true);
- $(h==="guests"?"guestsView":h==="logistics"?"logisticsView":"eventView").hidden=false;
- document.querySelectorAll("nav a").forEach(a=>{const selected=a.getAttribute("href")===(h==="guests"?"#guests":h==="logistics"?"#logistics":"#events");if(selected)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current");});
- document.title=(h==="guests"?"Guests":h==="logistics"?"The details":"Friendsgiving")+" | The Garretts";
+ $(h==="guests"?"guestsView":h==="invite"||h==="logistics"?"logisticsView":"eventView").hidden=false;
+ document.querySelectorAll("nav a").forEach(a=>{const selected=a.getAttribute("href")===(h==="guests"?"#guests":h==="invite"||h==="logistics"?"#invite":"#events");if(selected)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current");});
+ document.title=(h==="guests"?"Guests":h==="invite"||h==="logistics"?"Invitation":"Potluck")+" | The Garretts";
  if(h==="signup")showForm();else window.scrollTo(0,0);
 }
 async function api(path,method="GET",body){
