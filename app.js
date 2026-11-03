@@ -18,6 +18,9 @@ function combinedEntries(){
 function covered(dish){return combinedEntries().filter(e=>e.id!==currentId&&canonical(e.bringing).toLowerCase()===dish.toLowerCase()).length;}
 
 const $=id=>document.getElementById(id);
+// Show the potluck immediately; do not leave the obsolete events landing page visible if initialization fails.
+if(document.getElementById("eventView")){document.getElementById("home").hidden=true;document.getElementById("eventView").hidden=false;}
+window.addEventListener("error",event=>{const p=document.getElementById("plCount");if(p&&(!p.textContent||p.textContent===""))p.textContent="The potluck is temporarily having trouble loading. Please refresh or contact the hosts.";});
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const KINDS=[["main","Mains"],["side","Sides"],["dessert","Desserts"],["drink","Drinks"],["other","Other & supplies"]];
 let entries=[],ready=false,currentId=null,currentToken=null,loading=false,saving=false;
