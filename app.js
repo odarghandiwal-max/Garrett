@@ -42,7 +42,7 @@ const blankForm='<h2 class="label" id="add-h">Choose something to bring</h2><p c
 '<div class="row"><button class="primary" id="saveButton" type="submit" disabled>Submit</button><button class="text-button" id="newButton" type="button" hidden>Add another item</button><span class="status" id="saveStatus" role="status" aria-live="polite"></span></div></form>'+
 '';
 $("eventView").querySelector(".compose").innerHTML=blankForm;
-$("evHead").after($("eventView").querySelector(".compose"));
+$("eventView").querySelector(".potluck").after($("eventView").querySelector(".compose"));
 $("guestsView").querySelector(".compose").remove();
 $("guestsView").querySelector(".intro p").textContent="Good company, all together. Families and friends are grouped together below.";
 $("lgList").innerHTML='<section class="lg"><dl class="facts"><div class="fact"><dt>When</dt><dd>Saturday, November 21, 2026 at 2:00 PM PST</dd></div><div class="fact"><dt>Where</dt><dd>158 Santa Ana Ave, Long Beach, CA'+maps+'</dd></div></dl></section>';
