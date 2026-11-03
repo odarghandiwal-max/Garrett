@@ -26,17 +26,6 @@ async function load(){try{const data=await api("garrett_guest_groups?select=*&or
 function open(g){
  el("guestEditForm").hidden=false;el("guestId").value=g?.id||"";el("guestLabel").value=g?.label||"";el("guestNames").value=(g?.names||[]).join("\n");el("guestKids").value=(g?.kids||[]).join("\n");el("guestStatus").value=g?.status||"invited";el("guestDelete").hidden=!g?.id;el("guestLabel").focus();
 }
-function setLoggedIn(on){el("guestLoginForm").hidden=on;el("guestAdminTools").hidden=!on;if(!on)el("guestEditForm").hidden=true;render();}
-el("guestLoginForm").onsubmit=async e=>{
- e.preventDefault();msg("Signing in…");
- try{
- const data=await auth("token?grant_type=password",{email:el("guestEmail").value.trim(),password:el("guestPassword").value});
- const candidate=data.access_token;
- const r=await api("rpc/garrett_is_guest_admin","POST",{},candidate);
- if(r!==true)throw Error("This account is not approved as a host admin.");
- token=candidate;el("guestPassword").value="";setLoggedIn(true);msg("Signed in as a host. You can edit the guest list.");await load();
- }catch(err){token=null;setLoggedIn(false);msg(err.message);}
-};
 el("guestNew").onclick=()=>open(null);
 el("guestCancel").onclick=()=>el("guestEditForm").hidden=true;
 
