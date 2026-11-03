@@ -33,8 +33,8 @@ $("evHead").remove();
 $("eventView").querySelector(".lede").textContent="Here is what everyone has signed up to bring.";
 $("pl-h").textContent="Who’s bringing what";
 const names=PARTIES.flatMap(p=>p.names.concat(p.kids||[]));
-const blankForm='<h2 class="label" id="add-h">Choose something to bring</h2><p class="hint">Planning for about 30 people. Each sign-up covers the portion shown. Select one or more items, add your name, and submit. Anyone can edit the list.</p>'+
-'<form id="signupForm"><fieldset class="available-items"><legend class="sr-only">Available items</legend><div id="menuRows"></div><label class="item-option own-option"><input type="checkbox" name="item" value="custom"><span>Bring my own</span></label><label class="item-option own-option"><input type="checkbox" name="item" value="myself"><span>Just bringing myself</span></label></fieldset>'+
+const blankForm='<h2 class="label" id="add-h">Choose something to bring</h2><p class="hint">Planning for about 30 people. Each sign-up covers the portion shown. Select one or more items, choose how many portions of each, add your name, and submit. Anyone can edit the list.</p>'+
+'<form id="signupForm"><fieldset class="available-items"><legend class="sr-only">Available items</legend><div id="menuRows"></div><label class="item-option own-option"><input type="checkbox" name="item" value="custom"><span>Bring my own</span><span class="qty-control">Qty <input type="number" class="item-qty" min="1" max="20" value="1" aria-label="Quantity of custom item"></span></label><label class="item-option own-option"><input type="checkbox" name="item" value="myself"><span>Just bringing myself</span></label></fieldset>'+
 '<div class="grid"><div class="field wide" id="customField" hidden><label for="bringing">What are you bringing?</label><input id="bringing" type="text" maxlength="160" placeholder="Type your dish, drink or item"></div>'+
 '<div class="field wide"><label for="guestName">Your name</label><input id="guestName" type="text" autocomplete="name" list="guestNames" maxlength="60" required placeholder="Your name"><datalist id="guestNames">'+names.map(n=>'<option value="'+esc(n)+'"></option>').join("")+'</datalist></div></div>'+
 '<input id="course" type="hidden" value="side">'+
@@ -66,11 +66,12 @@ function render(){
 }
 function renderAvailable(){
  const selected=Array.from(document.querySelectorAll('input[name="item"]:checked')).map(x=>x.value);
+ const quantities=Object.fromEntries(Array.from(document.querySelectorAll(".item-option")).map(label=>[label.querySelector('input[name="item"]')?.value,label.querySelector(".item-qty")?.value]));
  $("menuRows").innerHTML=MENU.map((m,mi)=>{
  const pending=m[2].map((dish,di)=>({dish,di})).filter(o=>covered(o.dish)<PLAN[o.dish].slots);
- return pending.length?'<div class="available-group"><h3>'+esc(m[0])+'</h3><div class="item-options">'+pending.map(o=>'<label class="item-option"><input type="checkbox" name="item" value="'+mi+':'+o.di+'"><span>'+esc(o.dish)+'<small class="portion">'+esc(PLAN[o.dish].unit)+'</small><small class="coverage">'+Math.min(covered(o.dish),PLAN[o.dish].slots)+' of '+PLAN[o.dish].slots+' taken · '+Math.max(0,PLAN[o.dish].slots-covered(o.dish))+' available</small></span></label>').join("")+'</div></div>':"";
+ return pending.length?'<div class="available-group"><h3>'+esc(m[0])+'</h3><div class="item-options">'+pending.map(o=>'<label class="item-option"><input type="checkbox" name="item" value="'+mi+':'+o.di+'"><span>'+esc(o.dish)+'<small class="portion">'+esc(PLAN[o.dish].unit)+'</small><small class="coverage">'+Math.min(covered(o.dish),PLAN[o.dish].slots)+' of '+PLAN[o.dish].slots+' taken · '+Math.max(0,PLAN[o.dish].slots-covered(o.dish))+' available</small></span><span class="qty-control">Qty <input type="number" class="item-qty" min="1" max="20" value="1" aria-label="Quantity of '+esc(o.dish)+'"></span></label>').join("")+'</div></div>':"";
  }).join("")||'<p class="empty">The listed items are covered. Bring a favorite of your own.</p>';
- for(const input of document.querySelectorAll('input[name="item"]'))input.checked=selected.includes(input.value);
+ for(const input of document.querySelectorAll('input[name="item"]')){input.checked=selected.includes(input.value);const qty=input.closest(".item-option")?.querySelector(".item-qty");if(qty&&quantities[input.value])qty.value=quantities[input.value];}
  document.querySelectorAll('input[name="item"]').forEach(input=>{
  input.onchange=()=>{
  if(!input.checked)return;
@@ -127,11 +128,14 @@ $("signupForm").addEventListener("submit",async ev=>{
  const checked=Array.from(document.querySelectorAll('input[name="item"]:checked'));
  $("guestName").setCustomValidity(clean("guestName")?"":"Enter your name.");
  if(!checked.length){$("saveStatus").textContent="Select at least one item before saving.";return;}
- const selections=checked.map(input=>{
-  if(input.value==="custom")return {bringing:clean("bringing"),kind:"other"};
-  if(input.value==="myself")return {bringing:"Just bringing myself",kind:"other"};
+ const selections=checked.flatMap(input=>{
+  const qtyInput=input.closest(".item-option")?.querySelector(".item-qty");
+  const quantity=qtyInput?Number(qtyInput.value):1;
+  if(!Number.isInteger(quantity)||quantity<1||quantity>20)throw new Error("Invalid quantity");
+  if(input.value==="custom")return Array.from({length:quantity},()=>({bringing:clean("bringing"),kind:"other"}));
+  if(input.value==="myself")return [{bringing:"Just bringing myself",kind:"other"}];
   const [mi,di]=input.value.split(":").map(Number);
-  return {bringing:MENU[mi][2][di],kind:MENU[mi][1]};
+  return Array.from({length:quantity},()=>({bringing:MENU[mi][2][di],kind:MENU[mi][1]}));
  });
  $("bringing").setCustomValidity(selections.some(x=>!x.bringing)?"Enter what you are bringing.":"");
  if(!ev.target.reportValidity())return;
