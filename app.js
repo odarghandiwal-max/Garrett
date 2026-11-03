@@ -131,14 +131,14 @@ $("signupForm").addEventListener("submit",async ev=>{
  const selections=checked.flatMap(input=>{
   const qtyInput=input.closest(".item-option")?.querySelector(".item-qty");
   const quantity=qtyInput?Number(qtyInput.value):1;
-  if(!Number.isInteger(quantity)||quantity<1||quantity>20)throw new Error("Invalid quantity");
+  if(!Number.isInteger(quantity)||quantity<1||quantity>20){qtyInput?.setCustomValidity("Choose a quantity from 1 to 20.");qtyInput?.reportValidity();return [];}
   if(input.value==="custom")return Array.from({length:quantity},()=>({bringing:clean("bringing"),kind:"other"}));
   if(input.value==="myself")return [{bringing:"Just bringing myself",kind:"other"}];
   const [mi,di]=input.value.split(":").map(Number);
   return Array.from({length:quantity},()=>({bringing:MENU[mi][2][di],kind:MENU[mi][1]}));
  });
  $("bringing").setCustomValidity(selections.some(x=>!x.bringing)?"Enter what you are bringing.":"");
- if(!ev.target.reportValidity())return;
+ if(!ev.target.reportValidity()||!selections.length)return;
  
  saving=true;$("saveButton").disabled=true;$("saveStatus").textContent="Saving…";
  let done=0;
