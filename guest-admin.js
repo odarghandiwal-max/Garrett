@@ -3,7 +3,7 @@
 const BASE="https://hefwxmhdgkeqtyyfpwub.supabase.co";
 const KEY="sb_publishable_VJjXv7HOU5zyT4SAQWvl7w_iFU0h5cx";
 const fallback=[
-["Sterling & Jasmine",["Sterling","Jasmine"],["Harlo","Atlas"]],["Tyler & Kayla",["Tyler","Kayla"],["Hunter"]],["Sophia & Parker",["Sophia","Parker"],[]],["Adi & Dolav",["Adi","Dolav"],[]],["Shauna & Paul",["Shauna","Paul"],[]],["Evan & Louise",["Evan","Louise"],[],"maybe"],["Michelle",["Michelle"],[]],["Brad",["Brad"],[]],["Nawa",["Nawa"],[]],["Zoe",["Zoe"],[],"maybe"]
+["Sterling & Jasmine",["Sterling","Jasmine"],["Harlo","Atlas"]],["Tyler & Kayla",["Tyler","Kayla"],["Hunter"]],["Sophia & Parker",["Sophia","Parker"],[]],["Adi & Dolav",["Adi","Dolav"],[]],["Shauna & Paul",["Shauna","Paul"],[]],["Michelle",["Michelle"],[]],["Brad",["Brad"],[]],["Nawa",["Nawa"],[]],["Zoe",["Zoe"],[],"maybe"]
 ].map((p,i)=>({id:null,label:p[0],names:p[1],kids:p[2],status:p[3]||"invited",sort_order:i}));
 let groups=fallback, token=null, refresh=null;
 const el=id=>document.getElementById(id);
