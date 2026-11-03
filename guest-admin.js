@@ -3,7 +3,20 @@
 const BASE="https://hefwxmhdgkeqtyyfpwub.supabase.co";
 const KEY="sb_publishable_VJjXv7HOU5zyT4SAQWvl7w_iFU0h5cx";
 const fallback=[
-["Sterling & Jasmine",["Sterling","Jasmine"],["Harlo","Atlas"]],["Tyler & Kayla",["Tyler","Kayla"],["Hunter"]],["Sophia & Parker",["Sophia","Parker"],[]],["Adi & Dolav",["Adi","Dolav"],[]],["Shauna & Paul",["Shauna","Paul"],[]],["Michelle",["Michelle"],[]],["Brad",["Brad"],[]],["Nawa",["Nawa"],[]],["Zoe",["Zoe"],[],"maybe"]
+["Sterling & Jasmine",["Sterling","Jasmine"],["Harlow","Atlas"],"confirmed"],
+["Tyler & Kayla",["Tyler","Kayla"],["Hunter"],"confirmed"],
+["Sophia & Parker",["Sophia","Parker"],[],"confirmed"],
+["Adi & Dolav",["Adi","Dolav"],[],"confirmed"],
+["Shauna & Paul",["Shauna","Paul"],[],"confirmed"],
+["Brad",["Brad"],[],"confirmed"],
+["Michelle",["Michelle"],[],"confirmed"],
+["Sahar's group",["Sahar","Jasmine","Shay","Hilay"],[],"confirmed"],
+["Navid & Sarah",["Navid","Sarah"],[],"confirmed"],
+["Naser & Sarah",["Naser","Sarah"],[],"confirmed"],
+["Rece & wife",["Rece","Wife"],[],"maybe"],
+["Shaun & Vanessa",["Shaun","Vanessa"],[],"maybe"],
+["Zoe",["Zoe"],[],"declined"],
+["Nawa",["Nawa"],[],"declined"]
 ].map((p,i)=>({id:null,label:p[0],names:p[1],kids:p[2],status:p[3]||"invited",sort_order:i}));
 let groups=fallback, token=null, refresh=null;
 const el=id=>document.getElementById(id);
@@ -22,7 +35,7 @@ function render(){
  el("gsList").innerHTML='<p class="count">'+count+' invited guests · plus Onay & Jordan hosting</p>'+groups.map(g=>'<section class="guest-party"><h2>'+esc(g.label)+'</h2><p>'+esc((g.names||[]).join(" & "))+'</p>'+(g.kids?.length?'<p>With '+esc(g.kids.join(" & "))+'</p>':"")+(g.status!=="invited"?'<span class="guest-status">'+esc(g.status)+'</span>':"")+(g.id?'<div class="row"><button class="text-button guestEdit" type="button" data-id="'+esc(g.id)+'">Edit group</button></div>':"")+'</section>').join("");
  el("gsList").querySelectorAll(".guestEdit").forEach(b=>b.onclick=()=>open(groups.find(g=>g.id===b.dataset.id)));
 }
-async function load(){try{const data=await api("garrett_guest_groups?select=*&order=sort_order.asc,created_at.asc");if(Array.isArray(data)){groups=data;render();}}catch(e){msg("Could not load the shared guest list. Please try again after the database is active.");}}
+async function load(){try{const data=await api("garrett_guest_groups?select=*&order=sort_order.asc,created_at.asc");if(Array.isArray(data)){if(data.length===0){groups=fallback;render();msg("Guest list database is empty. Showing the saved list; run the guest import to enable editing these entries.");}else{groups=data;render();}}}catch(e){msg("Could not load the shared guest list. Please try again after the database is active.");}}
 function open(g){
  el("guestEditForm").hidden=false;el("guestId").value=g?.id||"";el("guestLabel").value=g?.label||"";el("guestNames").value=(g?.names||[]).join("\n");el("guestKids").value=(g?.kids||[]).join("\n");el("guestStatus").value=g?.status||"invited";el("guestDelete").hidden=!g?.id;el("guestLabel").focus();
 }
