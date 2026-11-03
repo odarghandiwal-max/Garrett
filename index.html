@@ -147,6 +147,8 @@ input[type="email"],input[type="password"]{font:inherit;color:var(--fg);backgrou
 @media(max-width:620px){.dishes li:not(.none){grid-template-columns:minmax(0,1fr)}.dishes .entry-actions{grid-column:1;grid-row:auto;margin-top:4px}.dishes .entry-actions button{min-width:90px}}
 
 .invite-photo{max-width:760px;margin:20px auto 40px}.invite-photo img{display:block;width:100%;height:auto}.potluck{margin-top:12px}#eventView .potluck{padding-top:12px}
+
+.item-option .qty-control{display:inline-flex;align-items:center;gap:8px;margin-left:auto;font-size:.9rem;white-space:nowrap}.item-option .item-qty{width:68px;min-height:40px;padding:6px 8px;font:inherit;text-align:center;border:1px solid var(--rule);background:var(--bg);color:var(--fg)}
 </style>
 </head>
 <body>
@@ -189,6 +191,6 @@ input[type="email"],input[type="password"]{font:inherit;color:var(--fg);backgrou
 <!-- Integrated front-end fixes. No separate patch is needed. -->
 
 
-<script src="app.js?v=20261103-copy-clean" defer></script><script src="guest-admin.js?v=20261103-guests2" defer></script>
+<script src="app.js?v=20261103-quantity" defer></script><script src="guest-admin.js?v=20261103-guests2" defer></script>
 </body>
 </html>
