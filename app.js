@@ -51,10 +51,11 @@ function render(){
  $("plCount").textContent=combinedEntries().length?combinedEntries().length+" guest "+(combinedEntries().length===1?"item":"items")+" signed up · ham and turkey are covered":"Ham and turkey are covered. Pick a side, dessert or drink below.";
  $("plBoard").innerHTML=KINDS.map(k=>{
  const items=all.filter(g=>g.kind===k[0]);
- return '<section class="kind"><h3>'+k[1]+' <span class="n">'+items.length+'</span></h3><ul class="dishes">'+(items.length?items.map(g=>'<li><span class="dish">'+esc(g.bringing)+'</span>'+(PLAN[g.bringing]?'<span class="portion">'+esc(PLAN[g.bringing].unit)+'</span>':"")+'<span class="by">'+esc(g.name)+'</span>'+(g.id?'<button type="button" class="text-button edit-entry" data-id="'+esc(g.id)+'">Edit</button>':"")+'</li>').join(""):'<li class="none">Open for sign-ups</li>')+'</ul></section>';
+ return '<section class="kind"><h3>'+k[1]+' <span class="n">'+items.length+'</span></h3><ul class="dishes">'+(items.length?items.map(g=>'<li><span class="dish">'+esc(g.bringing)+'</span>'+(PLAN[g.bringing]?'<span class="portion">'+esc(PLAN[g.bringing].unit)+'</span>':"")+'<span class="by">'+esc(g.name)+'</span>'+(g.id?'<button type="button" class="text-button edit-entry" data-id="'+esc(g.id)+'">Edit</button><button type="button" class="text-button delete-entry" data-id="'+esc(g.id)+'">Remove</button>':"")+'</li>').join(""):'<li class="none">Open for sign-ups</li>')+'</ul></section>';
  }).join("");
  renderAvailable();
  $("plBoard").querySelectorAll(".edit-entry").forEach(b=>b.addEventListener("click",()=>edit(b.dataset.id)));
+ $("plBoard").querySelectorAll(".delete-entry").forEach(b=>b.addEventListener("click",()=>removeEntry(b.dataset.id)));
  const prefs=entries.filter(g=>g.drink_preference);
  let prefEl=$("drinkPrefs");if(!prefEl){prefEl=document.createElement("section");prefEl.id="drinkPrefs";$("plBoard").after(prefEl);}
  prefEl.innerHTML=prefs.length?'<h2 class="label">Drink preferences</h2><ul class="dishes">'+prefs.map(g=>'<li><span class="dish">'+esc(g.name)+'</span><span class="by">'+esc(g.drink_preference)+'</span></li>').join("")+'</ul>':"";
@@ -77,6 +78,18 @@ function renderAvailable(){
 }
 function showForm(){$("eventView").hidden=false;$("guestsView").hidden=true;$("logisticsView").hidden=true;$("signupForm").scrollIntoView({behavior:"smooth",block:"start"});$("guestName").focus();}
 function reset(){currentId=null;currentToken=null;$("signupForm").reset();$("course").value="side";$("saveButton").textContent="Submit";$("newButton").hidden=true;$("saveStatus").textContent="";$("customField").hidden=true;$("bringing").required=false;renderAvailable();}
+async function removeEntry(id){
+ const e=entries.find(row=>row.id===id);if(!e)return;
+ if(!confirm("Remove "+e.bringing+" from "+e.name+"'s contributions? This cannot be undone."))return;
+ const token=owned[id];
+ if(!token){alert("This contribution was added on another device. Public removal requires a Supabase permissions update.");return;}
+ try{
+  await api("rpc/garrett_delete_signup","POST",{p_id:id,p_token:token});
+  entries=entries.filter(row=>row.id!==id);delete owned[id];
+  try{localStorage.setItem("garrett-owned",JSON.stringify(owned));}catch(err){}
+  render();$("saveStatus").textContent="Contribution removed.";
+ }catch(err){alert("Could not remove this contribution. The database may be unavailable or public deletion may not be enabled.");}
+}
 function edit(id){
  const e=entries.find(e=>e.id===id);if(!e)return;
  currentId=id;currentToken=owned[id];renderAvailable();
