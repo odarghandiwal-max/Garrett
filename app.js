@@ -67,12 +67,6 @@ function renderAvailable(){
  }).join("")||'<p class="empty">The listed items are covered. Bring a favorite of your own.</p>';
  for(const input of document.querySelectorAll('input[name="item"]'))input.checked=selected.includes(input.value);
  document.querySelectorAll('input[name="item"]').forEach(input=>{
- let wasChecked=false;
- input.closest("label").onpointerdown=()=>{wasChecked=input.checked;};
- input.onkeydown=ev=>{if(ev.key===" "){wasChecked=input.checked;}};
- input.onclick=()=>{
-  if(wasChecked){input.checked=false;wasChecked=false;$("bringing").value="";$("bringing").setCustomValidity("");$("bringing").required=false;$("customField").hidden=true;$("course").value="side";}
- };
  input.onchange=()=>{
  if(!input.checked)return;
  if(input.value==="custom"||input.value==="myself"){document.querySelectorAll('input[name="item"]').forEach(other=>{if(other!==input)other.checked=false;});}else{document.querySelectorAll('input[name="item"][value="custom"],input[name="item"][value="myself"]').forEach(other=>other.checked=false);}
@@ -116,7 +110,7 @@ $("signupForm").addEventListener("submit",async ev=>{
  const clean=id=>$(id).value.trim().replace(/\s+/g," ");
  const checked=Array.from(document.querySelectorAll('input[name="item"]:checked'));
  $("guestName").setCustomValidity(clean("guestName")?"":"Enter your name.");
- if(!checked.length){$("saveStatus").textContent="Select at least one item.";return;}
+ if(!checked.length){$("saveStatus").textContent="Select at least one item before saving.";return;}
  const selections=checked.map(input=>{
   if(input.value==="custom")return {bringing:clean("bringing"),kind:"other"};
   if(input.value==="myself")return {bringing:"Just bringing myself",kind:"other"};
@@ -125,6 +119,7 @@ $("signupForm").addEventListener("submit",async ev=>{
  });
  $("bringing").setCustomValidity(selections.some(x=>!x.bringing)?"Enter what you are bringing.":"");
  if(!ev.target.reportValidity())return;
+ if(currentId&&!currentToken){$("saveStatus").textContent="This entry was added on another device and cannot be changed here yet. Public editing requires a database update.";return;}
  saving=true;$("saveButton").disabled=true;$("saveStatus").textContent="Saving…";
  let done=0;
  try{
@@ -136,7 +131,7 @@ $("signupForm").addEventListener("submit",async ev=>{
    remember(id,token);entries=entries.filter(e=>e.id!==id).concat(row);done++;
   }
   reset();render();$("saveStatus").textContent=done+" "+(done===1?"item":"items")+" saved! You’re on the list.";
- }catch(e){render();$("saveStatus").textContent=done?done+" saved; remaining items could not be saved. Please try again.":"Could not confirm the save. Please try again.";}
+ }catch(e){render();$("saveStatus").textContent=done?done+" saved; remaining items could not be saved. Please try again.":"Could not save. Check that the Supabase project is active and try again.";}
  finally{saving=false;$("saveButton").disabled=!ready;}
 });
 ["guestName","bringing"].forEach(id=>$(id).addEventListener("input",()=>$(id).setCustomValidity("")));
