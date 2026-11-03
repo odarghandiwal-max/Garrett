@@ -30,7 +30,7 @@ $("logisticsView").querySelector(".intro h1").textContent="You're invited.";
 $("logisticsView").querySelector(".intro p").textContent="Saturday, November 21, 2026 at 2:00 PM · The Garretts · Long Beach";
 $("logisticsView").querySelector(".intro").insertAdjacentHTML("afterend",'<div class="invite-photo"><img src="assets/friendsgiving-invitation.jpg" alt="Friendsgiving invitation — November 21, 2026 at 2 PM, 158 Santa Ana Ave, Long Beach" loading="lazy"></div>');
 $("evHead").remove();
-$("eventView").querySelector(".lede").textContent="Here is what everyone has signed up to bring. Ham and turkey are on us.";
+$("eventView").querySelector(".lede").textContent="Here is what everyone has signed up to bring.";
 $("pl-h").textContent="Who’s bringing what";
 const names=PARTIES.flatMap(p=>p.names.concat(p.kids||[]));
 const blankForm='<h2 class="label" id="add-h">Choose something to bring</h2><p class="hint">Planning for about 30 people. Each sign-up covers the portion shown. Select one or more items, add your name, and submit. Anyone can edit the list.</p>'+
@@ -52,7 +52,7 @@ document.querySelector('nav a[href="#events"]').textContent="Potluck";
 function render(){
  const host=[{name:"Onay & Jordan",bringing:"Honey Baked Ham",kind:"main",note:"Provided by the hosts"},{name:"Onay & Jordan",bringing:"Turkey",kind:"main",note:"Provided by the hosts"}];
  const all=host.concat(combinedEntries());
- $("plCount").textContent=combinedEntries().length?combinedEntries().length+" guest "+(combinedEntries().length===1?"item":"items")+" signed up · ham and turkey are covered":"Ham and turkey are covered. Pick a side, dessert or drink below.";
+ $("plCount").textContent=combinedEntries().length?combinedEntries().length+" guest "+(combinedEntries().length===1?"item":"items")+" signed up":"Pick a side, dessert or drink below.";
  $("plBoard").innerHTML=KINDS.map(k=>{
  const items=all.filter(g=>g.kind===k[0]);
  return '<section class="kind"><h3>'+k[1]+' <span class="n">'+items.length+'</span></h3><ul class="dishes">'+(items.length?items.map(g=>'<li><span class="dish">'+esc(g.bringing)+'</span>'+(PLAN[g.bringing]?'<span class="portion">'+esc(PLAN[g.bringing].unit)+'</span>':"")+'<span class="by">'+esc(g.name)+'</span>'+(g.id?'<span class="entry-actions"><button type="button" class="text-button edit-entry" data-id="'+esc(g.id)+'">Edit</button><button type="button" class="text-button delete-entry" data-id="'+esc(g.id)+'">Remove</button></span>':"")+'</li>').join(""):'<li class="none">Open for sign-ups</li>')+'</ul></section>';
