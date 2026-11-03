@@ -191,6 +191,18 @@ input[type="email"],input[type="password"]{font:inherit;color:var(--fg);backgrou
 <!-- Integrated front-end fixes. No separate patch is needed. -->
 
 
+<script>
+(function(){
+ function showPage(){
+  var page=(location.hash||"#events").split("?")[0];
+  var target=page==="#guests"?"guestsView":(page==="#invite"||page==="#logistics")?"logisticsView":"eventView";
+  ["home","eventView","logisticsView","guestsView"].forEach(function(id){var el=document.getElementById(id);if(el)el.hidden=id!==target;});
+  document.querySelectorAll("nav a").forEach(function(a){if(a.getAttribute("href")===(target==="guestsView"?"#guests":target==="logisticsView"?"#invite":"#events"))a.setAttribute("aria-current","page");else a.removeAttribute("aria-current");});
+ }
+ window.addEventListener("hashchange",showPage);
+ showPage();
+})();
+</script>
 <script src="app.js?v=20261103-potluck-visible" defer></script><script src="guest-admin.js?v=20261103-restored" defer></script>
 </body>
 </html>
