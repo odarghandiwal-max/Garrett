@@ -82,9 +82,9 @@ async function removeEntry(id){
  const e=entries.find(row=>row.id===id);if(!e)return;
  if(!confirm("Remove "+e.bringing+" from "+e.name+"'s contributions? This cannot be undone."))return;
  const token=owned[id];
- if(!token){alert("This contribution was added on another device. Public removal requires a Supabase permissions update.");return;}
+ 
  try{
-  await api("rpc/garrett_delete_signup","POST",{p_id:id,p_token:token});
+  await api("rpc/garrett_public_delete_signup","POST",{p_id:id});
   entries=entries.filter(row=>row.id!==id);delete owned[id];
   try{localStorage.setItem("garrett-owned",JSON.stringify(owned));}catch(err){}
   render();$("saveStatus").textContent="Contribution removed.";
@@ -132,14 +132,14 @@ $("signupForm").addEventListener("submit",async ev=>{
  });
  $("bringing").setCustomValidity(selections.some(x=>!x.bringing)?"Enter what you are bringing.":"");
  if(!ev.target.reportValidity())return;
- if(currentId&&!currentToken){$("saveStatus").textContent="This entry was added on another device and cannot be changed here yet. Public editing requires a database update.";return;}
+ 
  saving=true;$("saveButton").disabled=true;$("saveStatus").textContent="Saving…";
  let done=0;
  try{
   for(const selection of selections){
    const id=done===0&&currentId?currentId:crypto.randomUUID();
    const token=done===0&&currentToken?currentToken:Array.from(crypto.getRandomValues(new Uint8Array(32)),b=>b.toString(16).padStart(2,"0")).join("");
-   const data=await api("rpc/garrett_save_signup","POST",{p_id:id,p_token:token,p_name:clean("guestName"),p_bringing:selection.bringing,p_kind:selection.kind,p_note:entries.find(e=>e.id===id)?.note||"",p_drink_preference:clean("drinkPreference")});
+   const data=done===0&&currentId?await api("rpc/garrett_public_edit_signup","POST",{p_id:id,p_name:clean("guestName"),p_bringing:selection.bringing,p_kind:selection.kind,p_drink_preference:clean("drinkPreference")}):await api("rpc/garrett_save_signup","POST",{p_id:id,p_token:token,p_name:clean("guestName"),p_bringing:selection.bringing,p_kind:selection.kind,p_note:"",p_drink_preference:clean("drinkPreference")});
    const row=Array.isArray(data)?data[0]:data;if(!row||row.id!==id)throw Error("SAVE_NOT_CONFIRMED");
    remember(id,token);entries=entries.filter(e=>e.id!==id).concat(row);done++;
   }
