@@ -49,6 +49,7 @@ $("eventView").querySelector(".potluck").after($("eventView").querySelector(".co
 $("guestsView").querySelector(".compose").remove();
 $("guestsView").querySelector(".intro p").textContent="Good company, all together. Families and friends are grouped together below.";
 $("lgList").innerHTML='<section class="lg"><dl class="facts"><div class="fact"><dt>When</dt><dd>Saturday, November 21, 2026 at 2:00 PM PST</dd></div><div class="fact"><dt>Where</dt><dd>158 Santa Ana Ave, Long Beach, CA'+maps+'</dd></div></dl></section>';
+$("logisticsView").querySelector(".invite-photo")?.before($("lgList"));
 $("gsList").innerHTML='<p class="count">'+names.length+' invited guests · plus Onay & Jordan hosting</p>'+PARTIES.map(p=>'<section class="guest-party"><h2>'+esc(p.label)+'</h2>'+(p.kids?.length?'<p>With '+esc(p.kids.join(" & "))+'</p>':p.label==="HLers"?'<p>'+esc(p.names.join(", "))+'</p>':"")+(p.status==="maybe"?'<span class="guest-status">Maybe</span>':"")+'</section>').join("");
 document.querySelector('nav a[href="#past"]')?.remove();
 document.querySelector('nav a[href="#events"]').textContent="Potluck";
