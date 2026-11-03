@@ -57,10 +57,19 @@ function render(){
  const host=[{name:"Onay & Jordan",bringing:"Honey Baked Ham",kind:"main",note:"Provided by the hosts"},{name:"Onay & Jordan",bringing:"Turkey",kind:"main",note:"Provided by the hosts"}];
  const all=host.concat(combinedEntries());
  $("plCount").textContent=combinedEntries().length?combinedEntries().length+" guest "+(combinedEntries().length===1?"item":"items")+" signed up":"Pick a side, dessert or drink below.";
- $("plBoard").innerHTML=KINDS.map(k=>{
- const items=all.filter(g=>g.kind===k[0]);
- return '<section class="kind"><h3>'+k[1]+' <span class="n">'+items.length+'</span></h3><ul class="dishes">'+(items.length?items.map(g=>'<li><span class="dish">'+esc(g.bringing)+'</span>'+(PLAN[g.bringing]?'<span class="portion">'+esc(PLAN[g.bringing].unit)+'</span>':"")+'<span class="by">'+esc(g.name)+'</span>'+(g.id?'<span class="entry-actions"><button type="button" class="text-button edit-entry" data-id="'+esc(g.id)+'">Edit</button><button type="button" class="text-button delete-entry" data-id="'+esc(g.id)+'">Remove</button></span>':"")+'</li>').join(""):'<li class="none">Open for sign-ups</li>')+'</ul></section>';
- }).join("");
+ const grouped=new Map();
+ for(const item of all){
+  const key=String(item.name||"Unknown").trim().toLocaleLowerCase();
+  if(!grouped.has(key))grouped.set(key,{name:item.name||"Unknown",items:[]});
+  grouped.get(key).items.push(item);
+ }
+ $("plBoard").innerHTML=Array.from(grouped.values()).map(group=>
+  '<section class="kind name-group"><h3>'+esc(group.name)+' <span class="n">'+group.items.length+'</span></h3><ul class="dishes">'+
+  group.items.map(g=>'<li><span class="dish">'+esc(g.bringing)+'</span>'+
+  (PLAN[g.bringing]?'<span class="portion">'+esc(PLAN[g.bringing].unit)+'</span>':"")+
+  (g.id?'<span class="entry-actions"><button type="button" class="text-button edit-entry" data-id="'+esc(g.id)+'">Edit</button><button type="button" class="text-button delete-entry" data-id="'+esc(g.id)+'">Remove</button></span>':"")+
+  '</li>').join("")+'</ul></section>'
+ ).join("");
  renderAvailable();
  $("plBoard").querySelectorAll(".edit-entry").forEach(b=>b.addEventListener("click",()=>edit(b.dataset.id)));
  $("plBoard").querySelectorAll(".delete-entry").forEach(b=>b.addEventListener("click",()=>removeEntry(b.dataset.id)));
