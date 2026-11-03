@@ -51,7 +51,7 @@ function render(){
  $("plCount").textContent=combinedEntries().length?combinedEntries().length+" guest "+(combinedEntries().length===1?"item":"items")+" signed up · ham and turkey are covered":"Ham and turkey are covered. Pick a side, dessert or drink below.";
  $("plBoard").innerHTML=KINDS.map(k=>{
  const items=all.filter(g=>g.kind===k[0]);
- return '<section class="kind"><h3>'+k[1]+' <span class="n">'+items.length+'</span></h3><ul class="dishes">'+(items.length?items.map(g=>'<li><span class="dish">'+esc(g.bringing)+'</span>'+(PLAN[g.bringing]?'<span class="portion">'+esc(PLAN[g.bringing].unit)+'</span>':"")+'<span class="by">'+esc(g.name)+'</span>'+(g.id?'<button type="button" class="text-button edit-entry" data-id="'+esc(g.id)+'">Edit</button><button type="button" class="text-button delete-entry" data-id="'+esc(g.id)+'">Remove</button>':"")+'</li>').join(""):'<li class="none">Open for sign-ups</li>')+'</ul></section>';
+ return '<section class="kind"><h3>'+k[1]+' <span class="n">'+items.length+'</span></h3><ul class="dishes">'+(items.length?items.map(g=>'<li><span class="dish">'+esc(g.bringing)+'</span>'+(PLAN[g.bringing]?'<span class="portion">'+esc(PLAN[g.bringing].unit)+'</span>':"")+'<span class="by">'+esc(g.name)+'</span>'+(g.id?'<span class="entry-actions"><button type="button" class="text-button edit-entry" data-id="'+esc(g.id)+'">Edit</button><button type="button" class="text-button delete-entry" data-id="'+esc(g.id)+'">Remove</button></span>':"")+'</li>').join(""):'<li class="none">Open for sign-ups</li>')+'</ul></section>';
  }).join("");
  renderAvailable();
  $("plBoard").querySelectorAll(".edit-entry").forEach(b=>b.addEventListener("click",()=>edit(b.dataset.id)));
