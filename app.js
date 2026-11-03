@@ -81,14 +81,13 @@ function reset(){currentId=null;currentToken=null;$("signupForm").reset();$("cou
 async function removeEntry(id){
  const e=entries.find(row=>row.id===id);if(!e)return;
  if(!confirm("Remove "+e.bringing+" from "+e.name+"'s contributions? This cannot be undone."))return;
- const token=owned[id];
- 
  try{
-  await api("rpc/garrett_public_delete_signup","POST",{p_id:id});
+  const deleted=await api("rpc/garrett_public_delete_signup","POST",{p_id:id});
+  if(deleted!==true)throw Error("Database did not confirm deletion");
   entries=entries.filter(row=>row.id!==id);delete owned[id];
   try{localStorage.setItem("garrett-owned",JSON.stringify(owned));}catch(err){}
   render();$("saveStatus").textContent="Contribution removed.";
- }catch(err){alert("Could not remove this contribution. The database may be unavailable or public deletion may not be enabled.");}
+ }catch(err){alert("Could not remove this contribution: "+err.message+". Please send me this exact error.");}
 }
 function edit(id){
  const e=entries.find(e=>e.id===id);if(!e)return;
@@ -108,7 +107,7 @@ function route(){
 }
 async function api(path,method="GET",body){
  const r=await fetch(BASE+path,{method,headers:{apikey:API_KEY,"Content-Type":"application/json"},body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(12000)});
- const data=await r.json();if(!r.ok)throw Error(data.code||"SAVE_FAILED");return data;
+ const data=await r.json();if(!r.ok)throw Error((data.message||data.code||"SAVE_FAILED")+(data.hint?" — "+data.hint:""));return data;
 }
 async function load(){
  if(loading||saving)return;loading=true;
