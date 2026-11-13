@@ -60,16 +60,24 @@ function render(){
  const grouped=new Map();
  for(const item of all){
   const key=String(item.name||"Unknown").trim().toLocaleLowerCase();
-  if(!grouped.has(key))grouped.set(key,{name:item.name||"Unknown",items:[]});
-  grouped.get(key).items.push(item);
+  if(!grouped.has(key))grouped.set(key,{name:item.name||"Unknown",items:new Map()});
+  const group=grouped.get(key),dish=canonical(item.bringing);
+  const dishKey=String(item.kind||"")+"|"+String(dish).trim().toLocaleLowerCase();
+  if(!group.items.has(dishKey))group.items.set(dishKey,{bringing:dish,entries:[]});
+  group.items.get(dishKey).entries.push(item);
  }
- $("plBoard").innerHTML=Array.from(grouped.values()).map(group=>
-  '<section class="kind name-group"><h3>'+esc(group.name)+' <span class="n">'+group.items.length+'</span></h3><ul class="dishes">'+
-  group.items.map(g=>'<li><span class="dish">'+esc(g.bringing)+'</span>'+
-  (PLAN[g.bringing]?'<span class="portion">'+esc(PLAN[g.bringing].unit)+'</span>':"")+
-  (g.id?'<span class="entry-actions"><button type="button" class="text-button edit-entry" data-id="'+esc(g.id)+'">Edit</button><button type="button" class="text-button delete-entry" data-id="'+esc(g.id)+'">Remove</button></span>':"")+
-  '</li>').join("")+'</ul></section>'
- ).join("");
+ $("plBoard").innerHTML=Array.from(grouped.values()).map(group=>{
+  const dishes=Array.from(group.items.values());
+  return '<section class="kind name-group"><h3>'+esc(group.name)+' <span class="n">'+dishes.length+'</span></h3><ul class="dishes">'+
+  dishes.map(g=>{
+   const count=g.entries.length,unit=PLAN[g.bringing]?.unit;
+   const quantity=count>1?'<span class="portion">'+count+' portions'+(unit?' · '+esc(unit)+' each':'')+'</span>':(unit?'<span class="portion">'+esc(unit)+'</span>':'');
+   const editable=g.entries.filter(e=>e.id);
+   const actions=editable.length===1?'<span class="entry-actions"><button type="button" class="text-button edit-entry" data-id="'+esc(editable[0].id)+'">Edit</button><button type="button" class="text-button delete-entry" data-id="'+esc(editable[0].id)+'">Remove</button></span>':
+    editable.length>1?'<details class="portion-actions"><summary>Manage '+editable.length+' portions</summary>'+editable.map((e,i)=>'<div class="entry-actions"><span>Portion '+(i+1)+'</span><button type="button" class="text-button edit-entry" data-id="'+esc(e.id)+'">Edit</button><button type="button" class="text-button delete-entry" data-id="'+esc(e.id)+'">Remove</button></div>').join('')+'</details>':'';
+   return '<li><span class="dish">'+esc(g.bringing)+'</span>'+quantity+actions+'</li>';
+  }).join("")+'</ul></section>';
+ }).join("");
  renderAvailable();
  $("plBoard").querySelectorAll(".edit-entry").forEach(b=>b.addEventListener("click",()=>edit(b.dataset.id)));
  $("plBoard").querySelectorAll(".delete-entry").forEach(b=>b.addEventListener("click",()=>removeEntry(b.dataset.id)));
