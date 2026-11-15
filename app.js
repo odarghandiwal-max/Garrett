@@ -82,19 +82,32 @@ function choosePortion(action,dish,rows){
  dialog.showModal();
 }
 function render(){
- const host=[{name:"Onay & Jordan",bringing:"Honey Baked Ham",kind:"main",note:"Provided by the hosts"},{name:"Onay & Jordan",bringing:"Turkey",kind:"main",note:"Provided by the hosts"}];
+ const hostName="Onay & Jordan";
+ const host=[
+  {name:hostName,bringing:"Honey Baked Ham",kind:"main",note:"Provided by the hosts"},
+  {name:hostName,bringing:"Turkey",kind:"main",note:"Provided by the hosts"}
+ ];
  const all=host.concat(combinedEntries());
  $("plCount").textContent=combinedEntries().length?combinedEntries().length+" guest "+(combinedEntries().length===1?"item":"items")+" signed up":"Pick a side, dessert or drink below.";
  const grouped=new Map();
  for(const item of all){
-  const key=String(item.name||"Unknown").trim().toLocaleLowerCase();
-  if(!grouped.has(key))grouped.set(key,{name:item.name||"Unknown",items:new Map()});
+  const name=String(item.name||"Unknown").trim()||"Unknown";
+  const key=name.toLocaleLowerCase("en-US");
+  if(!grouped.has(key))grouped.set(key,{name,items:new Map()});
   const group=grouped.get(key),dish=canonical(item.bringing);
   const dishKey=String(item.kind||"")+"|"+String(dish).trim().toLocaleLowerCase();
   if(!group.items.has(dishKey))group.items.set(dishKey,{bringing:dish,entries:[]});
   group.items.get(dishKey).entries.push(item);
  }
- $("plBoard").innerHTML=Array.from(grouped.values()).map(group=>{
+ const hostGroup=grouped.get(hostName.toLocaleLowerCase("en-US"));
+ grouped.delete(hostName.toLocaleLowerCase("en-US"));
+ const guestGroups=Array.from(grouped.values()).sort((a,b)=>{
+  const firstA=a.name.split(/[\s,&]+/,1)[0];
+  const firstB=b.name.split(/[\s,&]+/,1)[0];
+  const options={sensitivity:"base"};
+  return firstA.localeCompare(firstB,"en-US",options)||a.name.localeCompare(b.name,"en-US",options);
+ });
+ $("plBoard").innerHTML=[hostGroup,...guestGroups].map(group=>{
   const dishes=Array.from(group.items.values());
   return '<section class="kind name-group"><h3>'+esc(group.name)+' <span class="n">'+dishes.length+'</span></h3><ul class="dishes">'+
   dishes.map(g=>{
