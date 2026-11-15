@@ -121,9 +121,19 @@ function render(){
   }).join("")+'</ul></section>';
  }).join("");
  renderAvailable();
- const prefs=entries.filter(g=>g.drink_preference);
+ const prefs=new Map();
+ for(const entry of entries){
+  const preference=entry.drink_preference?.trim();
+  if(!preference)continue;
+  const name=entry.name.trim();
+  const key=name.toLocaleLowerCase();
+  if(!prefs.has(key))prefs.set(key,{name,preferences:new Map()});
+  const group=prefs.get(key).preferences;
+  const preferenceKey=preference.toLocaleLowerCase();
+  if(!group.has(preferenceKey))group.set(preferenceKey,preference);
+ }
  let prefEl=$("drinkPrefs");if(!prefEl){prefEl=document.createElement("section");prefEl.id="drinkPrefs";$("plBoard").after(prefEl);}
- prefEl.innerHTML=prefs.length?'<h2 class="label">Drink preferences</h2><ul class="dishes">'+prefs.map(g=>'<li><span class="dish">'+esc(g.name)+'</span><span class="by">'+esc(g.drink_preference)+'</span></li>').join("")+'</ul>':"";
+ prefEl.innerHTML=prefs.size?'<h2 class="label">Drink preferences</h2><ul class="dishes">'+Array.from(prefs.values(),g=>'<li><span class="dish">'+esc(g.name)+'</span><span class="by">'+esc(Array.from(g.preferences.values()).join(" · "))+'</span></li>').join("")+'</ul>':"";
 }
 $("plBoard").addEventListener("click",event=>{
  const button=event.target.closest(".dish-action");
