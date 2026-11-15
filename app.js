@@ -53,6 +53,34 @@ $("logisticsView").querySelector(".invite-photo")?.before($("lgList"));
 $("gsList").innerHTML='<p class="count">'+names.length+' invited guests · plus Onay & Jordan hosting</p>'+PARTIES.map(p=>'<section class="guest-party"><h2>'+esc(p.label)+'</h2>'+(p.kids?.length?'<p>With '+esc(p.kids.join(" & "))+'</p>':p.label==="HLers"?'<p>'+esc(p.names.join(", "))+'</p>':"")+(p.status==="maybe"?'<span class="guest-status">Maybe</span>':"")+'</section>').join("");
 document.querySelector('nav a[href="#past"]')?.remove();
 document.querySelector('nav a[href="#events"]').textContent="Potluck";
+const contributionIcons={
+ edit:'<path d="m14 5 5 5M4 20l4.5-1 11-11a2.1 2.1 0 0 0-3-3l-11 11L4 20Z"/>',
+ remove:'<path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 4v5m4-5v5"/>'
+};
+function contributionButton(action,label){
+ return '<button type="button" class="dish-action" data-action="'+action+'" aria-label="'+esc(label)+'" title="'+esc(label)+'">'+
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+contributionIcons[action]+'</svg></button>';
+}
+function performContributionAction(action,id){
+ if(action==="Edit")edit(id);
+ else removeEntry(id);
+}
+function choosePortion(action,dish,rows){
+ const dialog=document.createElement("dialog");
+ dialog.className="portion-dialog";
+ dialog.setAttribute("aria-labelledby","portion-dialog-title");
+ dialog.innerHTML='<form method="dialog"><h3 id="portion-dialog-title">'+action+' '+esc(dish)+'</h3>'+
+  '<label for="portion-choice">Which portion?</label><select id="portion-choice" autofocus>'+
+  rows.map((row,index)=>'<option value="'+esc(row.id)+'">Portion '+(index+1)+(row.drink_preference?' · '+esc(row.drink_preference):'')+'</option>').join("")+
+  '</select><div class="row"><button class="primary" value="apply">'+action+'</button><button type="submit" class="text-button" value="cancel">Cancel</button></div></form>';
+ dialog.addEventListener("close",()=>{
+  const id=dialog.querySelector("select").value;
+  dialog.remove();
+  if(dialog.returnValue==="apply")performContributionAction(action,id);
+ },{once:true});
+ document.body.append(dialog);
+ dialog.showModal();
+}
 function render(){
  const host=[{name:"Onay & Jordan",bringing:"Honey Baked Ham",kind:"main",note:"Provided by the hosts"},{name:"Onay & Jordan",bringing:"Turkey",kind:"main",note:"Provided by the hosts"}];
  const all=host.concat(combinedEntries());
@@ -71,20 +99,28 @@ function render(){
   return '<section class="kind name-group"><h3>'+esc(group.name)+' <span class="n">'+dishes.length+'</span></h3><ul class="dishes">'+
   dishes.map(g=>{
    const count=g.entries.length,unit=PLAN[g.bringing]?.unit;
-   const quantity=count>1?'<span class="portion">'+count+' portions'+(unit?' · '+esc(unit)+' each':'')+'</span>':(unit?'<span class="portion">'+esc(unit)+'</span>':'');
+   const quantity=count>1?count+' portions'+(unit?' · '+unit+' each':''):(unit||'');
    const editable=g.entries.filter(e=>e.id);
-   const actions=editable.length===1?'<span class="entry-actions"><button type="button" class="text-button edit-entry" data-id="'+esc(editable[0].id)+'">Edit</button><button type="button" class="text-button delete-entry" data-id="'+esc(editable[0].id)+'">Remove</button></span>':
-    editable.length>1?'<details class="portion-actions"><summary>Manage '+editable.length+' portions</summary>'+editable.map((e,i)=>'<div class="entry-actions"><span>Portion '+(i+1)+'</span><button type="button" class="text-button edit-entry" data-id="'+esc(e.id)+'">Edit</button><button type="button" class="text-button delete-entry" data-id="'+esc(e.id)+'">Remove</button></div>').join('')+'</details>':'';
-   return '<li><span class="dish">'+esc(g.bringing)+'</span>'+quantity+actions+'</li>';
+   const actions=editable.length?'<span class="dish-actions" data-ids="'+esc(JSON.stringify(editable.map(e=>e.id)))+'" data-dish="'+esc(g.bringing)+'">'+
+    contributionButton("edit","Edit "+g.bringing+" for "+group.name)+contributionButton("remove","Remove "+g.bringing+" for "+group.name)+'</span>':'';
+   return '<li><span class="dish-details"><span class="dish">'+esc(g.bringing)+'</span>'+
+    (quantity?'<span class="portion"> · '+esc(quantity)+'</span>':'')+'</span>'+actions+'</li>';
   }).join("")+'</ul></section>';
  }).join("");
  renderAvailable();
- $("plBoard").querySelectorAll(".edit-entry").forEach(b=>b.addEventListener("click",()=>edit(b.dataset.id)));
- $("plBoard").querySelectorAll(".delete-entry").forEach(b=>b.addEventListener("click",()=>removeEntry(b.dataset.id)));
  const prefs=entries.filter(g=>g.drink_preference);
  let prefEl=$("drinkPrefs");if(!prefEl){prefEl=document.createElement("section");prefEl.id="drinkPrefs";$("plBoard").after(prefEl);}
  prefEl.innerHTML=prefs.length?'<h2 class="label">Drink preferences</h2><ul class="dishes">'+prefs.map(g=>'<li><span class="dish">'+esc(g.name)+'</span><span class="by">'+esc(g.drink_preference)+'</span></li>').join("")+'</ul>':"";
 }
+$("plBoard").addEventListener("click",event=>{
+ const button=event.target.closest(".dish-action");
+ if(!button)return;
+ const actions=button.closest(".dish-actions");
+ const ids=JSON.parse(actions.dataset.ids);
+ const action=button.dataset.action==="edit"?"Edit":"Remove";
+ if(ids.length===1)performContributionAction(action,ids[0]);
+ else choosePortion(action,actions.dataset.dish,ids.map(id=>entries.find(row=>row.id===id)));
+});
 function renderAvailable(){
  const selected=Array.from(document.querySelectorAll('input[name="item"]:checked')).map(x=>x.value);
  const quantities=Object.fromEntries(Array.from(document.querySelectorAll(".item-option")).map(label=>[label.querySelector('input[name="item"]')?.value,label.querySelector(".item-qty")?.value]));
@@ -117,10 +153,10 @@ async function removeEntry(id){
 }
 function edit(id){
  const e=entries.find(e=>e.id===id);if(!e)return;
- currentId=id;currentToken=owned[id];renderAvailable();
+ reset();currentId=id;currentToken=owned[id];renderAvailable();
  $("guestName").value=e.name;$("bringing").value=e.bringing;$("course").value=e.kind;$("drinkPreference").value=e.drink_preference;$("saveButton").textContent="Save changes";$("newButton").hidden=false;$("saveStatus").textContent="";
  const choice=Array.from(document.querySelectorAll('input[name="item"]')).find(input=>{if(input.value==="custom")return false;if(input.value==="myself")return e.bringing==="Just bringing myself";const [mi,di]=input.value.split(":").map(Number);return MENU[mi][2][di]===e.bringing;});
- if(choice){choice.checked=true;$("customField").hidden=true;}else{document.querySelector('input[name="item"][value="custom"]').checked=true;$("customField").hidden=false;}
+ if(choice){choice.checked=true;$("customField").hidden=true;}else{document.querySelector('input[name="item"][value="custom"]').checked=true;$("customField").hidden=false;$("bringing").required=true;}
  showForm();
 }
 function route(){
